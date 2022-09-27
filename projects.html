@@ -127,6 +127,89 @@
                 This project is a AC equipment power controller circuit. Designs of the hardware can be found <a href="https://oshwlab.com/sakibchowdhury131/triac_iot_taru_notouch">here</a>.<br><br>
 				This hardware modulates the triggering time of triac bridges to control the intensity of Alternating Current Supported Devices. This can be primarily used with generic AC
 				equipments such as light bulbs. It cannot control the power of LED bulbs. 
+
+				A video demonstration of the operation can be seen <a href="https://photos.app.goo.gl/h95QKrgwWGKc5fnWA">here</a>.
+
+				<br><br><br>
+				<li><a href="#">4 Bit SAP Computer</a></li>
+				<br>
+				
+                This <a href="https://github.com/sakibchowdhury131/SAP_4BIT_VERILOG">repository</a> is the design of a 4 Bit SAP computer designed in VERILOG HDL. Total 16 instructions were implemented. 
+				<br>
+				<p>
+					4 Bit Computer in Verilog [SAP]<br>
+					- Instruction Set:<br>
+						- Add A, B <br>
+						- Sub A, B<br>
+						- XCHG B, A<br>
+						- mov B, [address]<br>
+						- out B<br>
+						- jnz Address<br>
+						- RCR A<br>
+						- mov B, BYTE<br>
+						- jmp Address<br>
+						- push A<br>
+						- pop A<br>
+						- CALL Addr<br>
+						- RET<br>
+						- xor A, [Addr]<br>
+						- test B, BYTE<br>
+						- HLT<br>
+
+					This computer is designed in such a fashion so that all the instructions are executed sequentially.
+					The instruction pointer for the next instruction is passed at the end of each instruction.<br>
+
+					# Instruction 1: ADD A, B<br>
+					In the first clock cycle, we observe the completion of the add operation which adds the values
+					stored in register A and B and saves the calculated result in the register A.<br>
+					# Instruction 2: SUB A,B<br>
+					In the next instruction, A - B operation is performed. The result is stored in register C. Later the
+					value stored in C is copied to A and the value in C is overwritten with 0.<br>
+					# Instruction 3: XCHG B, A<br>
+					In this case, the value of A is temporarily stored in register C and later the value of B is copied to
+					register A. Now value stored in B can be replaced with the register value of C to complete the
+					operation.<br>
+					# Instruction 4: mov B, [address]<br>
+					In this case, we are looking at the memory location pointed by the pointer ‘address’. Garbage
+					values are stored in the MEM at the beginning of the code. So the memory address pointed by the
+					‘address’ pointer will be copied to register B.<br>
+					# Instruction 5: OUT B<br>
+					The value of B is passed to the output buffer OUTPORT.<br>
+					# Instruction 6: JNZ address<br>
+					This instruction checks whether the zero flag holds a nonzero value or not. If it holds a nonzero
+					value the value of the Instruction pointer will be changed to the instruction address pointed by the
+					pointer ‘address’.<br>
+					# Instruction 7: RCR A<br>
+					This instruction rotates the value stored in register A in the right direction and holds it temporarily in
+					register C. In this case, the carry bit is also associated with the shift operation.<br>
+					# Instruction 8: MOV B, BYTE<br>
+					In this instruction, values stored in BYTE will be copied to the register B.<br>
+					# Instruction 9: JMP Address<br>
+					In this instruction, the address pointed by address is stored to the instruction pointer so that in the
+					next clock cycle, the pointed instruction is executed.<br>
+					# Instruction 10: PUSH A<br>
+					The value of A is saved to the stack memory at the location pointed by the stack pointer. The value
+					of stack pointer is increased by one so that if another push command is executed, the new value is
+					stored at the next memory location of the stack memory.<br>
+					# Instruction 11: POP A<br>
+					The value saved in the stack memory is retrieved and saved to the register A. before doing this
+					operation the value of stack pointer is decreased by one so that it fetches the last saved value from
+					the stack memory.<br>
+					# Instruction 12: Call Address<br>
+					In this case, current instruction pointer value is stored to the stack memory and the value of
+					instruction pointer is set to the value pointed by Address.<br>
+					# Instruction 13: RET<br>
+					Returns to the last instruction pointer saved previously in the stack memory.<br>
+					# Instruction 14: xor A, [address]<br>
+					The value stored in the memory address pointed by the ‘address’ pointer, is xored by the value
+					stored in the register A. The result is temporarily saved in register C. Later this value is moved to
+					the register A.<br>
+					# Instruction 15: TEST B, BYTE<br>
+					This instruction performs AND operation between B and BYTE but discards the result. It only
+					updates the flags based on the result .<br>
+					# Instruction 16: HLT<br>
+					This instruction sets the HLT flag indicating the end of the code.<br>
+				</p>
 			</ul>
 		</div>
 	</div>
