@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/kube.min.css" />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
     <link rel="stylesheet" href="css/custom.min.css" />
+	<link rel="stylesheet" href="css/card_add.css" />
     <link rel="shortcut icon" href="img/favicon.png" />
 	<link href='https://fonts.googleapis.com/css?family=Playfair+Display+SC:700' rel='stylesheet' type='text/css'>
 	<link href='https://fonts.googleapis.com/css?family=Lato:700,700' rel='stylesheet' type='text/css'>
@@ -46,27 +47,11 @@
 		<div class="container">
 			<h1>Projects ----> [THIS PAGE IS UNDER CONSTRUCTION]</h1>
 			<ul class="work-list">
-				All my projects are currrently slightly unorganized. So I haven't logged all my projects in this site. Soon they will be organized and updated here. Currently you can have a look at some of my projects
-                in my <a href="https://github.com/sakibchowdhury131/">Github</a> profile. <br>
+				Currently you can have a look at some of my other projects
+                in my <a href="https://github.com/sakibchowdhury131/">Github</a> repositories. <br>
 
 				
-				<style>
-				.card {
-					/* Add shadows to create the "card" effect */
-					box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-					transition: 0.3s;
-				  }
-				  
-				  /* On mouse-over, add a deeper shadow */
-				  .card:hover {
-					box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-				  }
-				  
-				  /* Add some padding inside the card container */
-				  .container {
-					padding: 2px 16px;
-				  }
-				</style>
+				
 				<br><br><br>
 				<div class="card">
 					<div class="container">
@@ -89,7 +74,7 @@
 					<div class="container">
 				<li><h2><a href="#">GAN - Face Generate</a></h2></li>
                 <br>
-                <img src="img/Screenshot from 2022-09-27 14-14-34.png"><br><br><br>
+                <img src="img/Screenshot from 2022-09-27 14-14-34.png" width="500" height="500"><br><br><br>
                 This project is a part of my learning GAN for the first time. It was trained on 200 images of my own face. Extremely small dataset, right? ;3 <br>
 				Implemented this on google colab. This picture depicts the output of the training after 10000 epochs.
 				Performance is not decent. But the shape of the face can be recognized. :3
@@ -104,7 +89,7 @@
 					<div class="container">
                 <li><h2><a href="#">Flappy Bird - RL Agent</a></h2></li>
                 <br>
-                <img src="img/ezgif-5-e173f66f67.gif"><br>
+                <img src="img/ezgif-5-e173f66f67.gif" onclick="enlargeImg()" id="img1"><br>
                 I did this project as part of my personal interest in the field of Reinforcement Learning. This autonomous agent was powered by Deep Q-Learning. It was trained on my CPU and it took pretty long 
                 time to train. :3
 				</div>
@@ -235,57 +220,6 @@
 
 					This computer is designed in such a fashion so that all the instructions are executed sequentially.
 					The instruction pointer for the next instruction is passed at the end of each instruction.<br>
-
-					# Instruction 1: ADD A, B<br>
-					In the first clock cycle, we observe the completion of the add operation which adds the values
-					stored in register A and B and saves the calculated result in the register A.<br>
-					# Instruction 2: SUB A,B<br>
-					In the next instruction, A - B operation is performed. The result is stored in register C. Later the
-					value stored in C is copied to A and the value in C is overwritten with 0.<br>
-					# Instruction 3: XCHG B, A<br>
-					In this case, the value of A is temporarily stored in register C and later the value of B is copied to
-					register A. Now value stored in B can be replaced with the register value of C to complete the
-					operation.<br>
-					# Instruction 4: mov B, [address]<br>
-					In this case, we are looking at the memory location pointed by the pointer ‘address’. Garbage
-					values are stored in the MEM at the beginning of the code. So the memory address pointed by the
-					‘address’ pointer will be copied to register B.<br>
-					# Instruction 5: OUT B<br>
-					The value of B is passed to the output buffer OUTPORT.<br>
-					# Instruction 6: JNZ address<br>
-					This instruction checks whether the zero flag holds a nonzero value or not. If it holds a nonzero
-					value the value of the Instruction pointer will be changed to the instruction address pointed by the
-					pointer ‘address’.<br>
-					# Instruction 7: RCR A<br>
-					This instruction rotates the value stored in register A in the right direction and holds it temporarily in
-					register C. In this case, the carry bit is also associated with the shift operation.<br>
-					# Instruction 8: MOV B, BYTE<br>
-					In this instruction, values stored in BYTE will be copied to the register B.<br>
-					# Instruction 9: JMP Address<br>
-					In this instruction, the address pointed by address is stored to the instruction pointer so that in the
-					next clock cycle, the pointed instruction is executed.<br>
-					# Instruction 10: PUSH A<br>
-					The value of A is saved to the stack memory at the location pointed by the stack pointer. The value
-					of stack pointer is increased by one so that if another push command is executed, the new value is
-					stored at the next memory location of the stack memory.<br>
-					# Instruction 11: POP A<br>
-					The value saved in the stack memory is retrieved and saved to the register A. before doing this
-					operation the value of stack pointer is decreased by one so that it fetches the last saved value from
-					the stack memory.<br>
-					# Instruction 12: Call Address<br>
-					In this case, current instruction pointer value is stored to the stack memory and the value of
-					instruction pointer is set to the value pointed by Address.<br>
-					# Instruction 13: RET<br>
-					Returns to the last instruction pointer saved previously in the stack memory.<br>
-					# Instruction 14: xor A, [address]<br>
-					The value stored in the memory address pointed by the ‘address’ pointer, is xored by the value
-					stored in the register A. The result is temporarily saved in register C. Later this value is moved to
-					the register A.<br>
-					# Instruction 15: TEST B, BYTE<br>
-					This instruction performs AND operation between B and BYTE but discards the result. It only
-					updates the flags based on the result .<br>
-					# Instruction 16: HLT<br>
-					This instruction sets the HLT flag indicating the end of the code.<br>
 				</p>
 			</ul>
 		</div>
@@ -327,6 +261,7 @@
 	<script src="js/typed.min.js"></script>
     <script src="js/kube.min.js"></script>
     <script src="js/site.js"></script>
+	<script src="js/click_to_enralge.js"></script>
     <script>
 		function newTyped(){}$(function(){$("#typed").typed({
 		// Change to edit type effect

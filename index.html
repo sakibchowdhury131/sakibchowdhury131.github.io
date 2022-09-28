@@ -9,9 +9,11 @@
     <link rel="stylesheet" href="css/kube.min.css" />
     <link rel="stylesheet" href="css/font-awesome.min.css" />
     <link rel="stylesheet" href="css/custom.min.css" />
+	<link rel="stylesheet" href="css/card_add.css" />
     <link rel="shortcut icon" href="img/favicon.png" />
 	<link href='https://fonts.googleapis.com/css?family=Playfair+Display+SC:700' rel='stylesheet' type='text/css'>
 	<link href='https://fonts.googleapis.com/css?family=Lato:700,700' rel='stylesheet' type='text/css'>
+	
 	<style>
 		.intro h1:before {
 			/* Edit this with your name or anything else */
@@ -41,26 +43,11 @@
 		</div>
 	</div>
 
-	<style>
-		.card {
-			/* Add shadows to create the "card" effect */
-			box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-			transition: 0.3s;
-		  }
-		  
-		  /* On mouse-over, add a deeper shadow */
-		  .card:hover {
-			box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-		  }
-		  
-		  /* Add some padding inside the card container */
-		  .container {
-			padding: 2px 16px;
-		  }
-		</style>
 	<!-- Introduction -->
 	<div class="intro section" id="about">
 		<div class="container">
+			<div class="card">
+				<div class="container">
 			<div class="units-row units-split wrap">
 				<div class="unit-20">
 					<img src="img/ava.jpg" alt="Avatar">
@@ -75,12 +62,16 @@
 					My research interest lies in the intersection of AI Robotics and Computer Vision. My detailed CV can be found <a href="https://drive.google.com/file/d/1dp9jmVsE0Fi8k9odnsmyoxs5QItwv-XN/view?usp=sharing">HERE</a>.
 				</p>
 			</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
 	<!-- Work Experience -->
 	<div class="work section second" id="experiences">
 		<div class="container">
+			<div class="card">
+				<div class="container">
 			<h1>Work<br>Experiences</h1>
 			<ul class="work-list">
 				<li>2021-Present</li>
@@ -104,6 +95,8 @@
 				Here, our team built drivers for interfacing UART, Timer and I2C peripherals in MSP430 microcontrollers. We also Designed power-efficient firmware for NRF905 communication and ESP8285 chip. 
 				We implemented MQTT server in Linux with MOSQUITTO and client in python with PAHO for successful communication between ESP8266 and ESP8285. We also designed SMD PCBs for several products.
 			</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -113,6 +106,8 @@
 	<!-- Education -->
 	<div class="work section second" id="education">
 		<div class="container">
+			<div class="card">
+				<div class="container">
 			<h1>Education</h1>
 			<ul class="work-list">
 				<li>2017-2022</li>
@@ -132,6 +127,8 @@
 				<li>Secondary School</li>
 				<li>GPA: 5.00 (on a scale of 5.00)</li>
 			</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -139,6 +136,8 @@
 	<!-- Professional Affiliation -->
 	<div class="work section second" id="affiliation">
 		<div class="container">
+			<div class="card">
+				<div class="container">
 			<h1>Professional<br />Affiliations</h1>
 			<ul class="work-list">
 				<li>2017-Present</li>
@@ -165,12 +164,16 @@
 				<li><a href="http://www.ieee-ras.org/">IEEE Robotics and Automation Society (RAS)</a></li>
 				<li>Member</li>
 			</ul>
+				</div>
+			</div>
 		</div>
 	</div>
 	
 	<!-- Award & Achievements -->
 	<div class="work section second" id="achievements">
 		<div class="container">
+			<div class="card">
+				<div class="container">
 			<h1>Award &amp;<br>Achievements</h1>
 			<ul class="work-list">
 				<li>2017</li>
@@ -180,9 +183,14 @@
 					Moreover, the arm had to sort the objects based on their shapes. Our team outperformed all the other teams by successfully completing without any error. 
 				</li>
 			</ul>
+				</div>
+			</div>
 		
 		</div>
 	</div>
+   
+	  <!-- script to set display property -->
+	  
 
 
 	<!-- Quote -->
@@ -220,6 +228,7 @@
 	<script src="js/typed.min.js"></script>
     <script src="js/kube.min.js"></script>
     <script src="js/site.js"></script>
+	<script src="js/click_to_enralge.js"></script>
     <script>
 		function newTyped(){}$(function(){$("#typed").typed({
 		// Change to edit type effect
