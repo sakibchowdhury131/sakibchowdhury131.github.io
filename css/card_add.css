@@ -7,7 +7,7 @@ transition: 0.3s;
 
 /* On mouse-over, add a deeper shadow */
 .card:hover {
-box-shadow: 0 64px 128px 0 rgba(0,0,0,0.2);
+box-shadow: 64px 64px 64px 64px rgba(0,0,0,0.2);
 }
 
 /* Add some padding inside the card container */
