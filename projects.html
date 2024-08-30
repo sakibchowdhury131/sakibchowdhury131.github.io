@@ -155,6 +155,32 @@
 				</div>
 				</div>
 
+
+				<br><br><br>
+				<div class="card">
+					<div class="container">
+				<li><h2><a href="#">Optimizing Bengali License Plate Recognition with Document Understanding Transformers</a></h2></li>
+				<br>
+				We are developing this tool to deploy it at <a href = 'https://goo.gl/maps/biCXvGxceA7j2rXt6'>Kalna Bridge Toll Plaza</a>.
+						<br>
+						<img src="img/License Plate Recognition - Document Transformers.jpg">
+						
+						<br> <br>
+						We have finetuned YoLoV8 on License Plates. YoLo provides the region of interest. We have also trained a document understanding transformer model
+						that can parse bengali texts from a image. Our experimentation has proved that document understanding transformers are mroe powerful compared to OCR methods.
+						We generated 2 million synthetic images of license plates and trained the document understanding transformer with them. Afterwards, we finetuned the model with 
+						real world data.
+						We have 3 cameras placed at 3 different angles at the toll plaza. The software individually detects and recognizes a single vehicle from 3 different angles and 
+						applies majority voting algorithm to reduce the misprediction probability. 
+						<br><br>
+						These two Colab notebooks can be explored to understand the training process of License Place Detector and Recognition System. 
+						<br>
+						<a style="color: red;" href="https://colab.research.google.com/drive/1bnxy8a19s8aC4RZfQw8CgQUmwaqUpw_-?usp=sharing">License Plate Detector</a>
+						<br>
+						<a style="color: red;" href="https://colab.research.google.com/drive/1TXHety4JCzbykU4Dun5ljKFtBjkDVUro?usp=sharing">License Plate Recognition System</a>
+					</div>
+				</div>
+
 				<br><br><br>
 
 				<div class="card">
@@ -167,7 +193,7 @@
 						
 						<a style="color: red;" href = "https://colab.research.google.com/drive/1QL7lGUbLwiiHjPFVVHck8KAH8QCUp3mB?usp=sharing">This notebook can be modified for finetuning whisper on any specific dataset. </a>
 						<br>
-						<img width="100%" src="img/asr-summary-of-model-architecture-desktop.svg">
+						<img width="60%" src="img/asr-summary-of-model-architecture-desktop.svg">
 					</div>
 				</div>
 
@@ -176,7 +202,7 @@
 					<div class="container">
 				<li><h2><a href="#">Bangla ESPNET - Text to Speech (TTS) </a></h2></li>
                 <br>
-                <img src="img/online-inference.png" width="100%"><br><br><br>
+                <img src="img/online-inference.png" width="60%"><br><br><br>
 				<a href= 'https://github.com/espnet/espnet'>ESPNET </a> is an end to end speech processing toolkit and it was developed by Carnegie Mellon University. 
 				This toolkit was primarily trained for English and Japanese language. In this project, we trained ESPNET LJSpeech Recipee for TTS on Google SLR Bangla dataset (360 hrs of Raw Audio) and built 
 				an end to end bangla TTS inference system. This projet was done as part of conversational AI design for banking platform at <a href = "http://celloscope.net/">Celloscope</a>.
@@ -193,7 +219,7 @@
 					<div class="container">
 				<li><h2><a href="#">Bangla ESPNET - Automatic Speech Recognition (ASR) </a></h2></li>
                 <br>
-                <img src="img/16316Empeek.png" width="100%"><br><br><br>
+                <img src="img/16316Empeek.png" width="60%"><br><br><br>
 				Mozilla released common voice dataset with 400 hours of Bangla Dataset. We trained <a href= 'https://github.com/espnet/espnet'>ESPNET ASR</a> for Bangla Language with the combination 
 				of both Google SLR and mozilla common voice dataset (Total 760 Hrs). This projet was done as part of conversational AI design for banking platform at <a href = "http://celloscope.net/">Celloscope</a>. 
 				
@@ -207,7 +233,7 @@
 					<div class="container">
 				<li><h2><a href="projects/PRIVACY_PRESERVING_GPS_WITH_OPEN_STREET_MAP_INTERFACE_EEE416.html">Privacy preserving GPS with open street map interface</a></h2></li>
 				<br>
-				<iframe width="100%" height="315" src="https://www.youtube.com/embed/Zvk5PcIrFHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				<iframe width="60%" height="315" src="https://www.youtube.com/embed/Zvk5PcIrFHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                 This project was a part of micro-processor lab course during 4th year of my undergraduate program at <a href="https://buet.ac.bd">BUET</a>. The system
                 efficiently incorporated IoT and web frameworks to establish an interesting tracking system. For more information, <a href="projects/PRIVACY_PRESERVING_GPS_WITH_OPEN_STREET_MAP_INTERFACE_EEE416.html">click here</a> 
 					</div>
@@ -218,7 +244,7 @@
 					<div class="container">
                 <li><h2><a href="https://drive.google.com/drive/folders/1-Yk09b7HAfHFt4LVzDm84w1Wfn8-JmX4?usp=sharing">Electronic Speed Controller for BLDC Motor</a></h2></li>
                 <br>
-                <img src="img/IMG_20190207_043602.jpg" width="95%" onclick="enlargeImg()" id="img50"><br>
+                <img src="img/IMG_20190207_043602.jpg" width="50%" onclick="enlargeImg()" id="img50"><br>
                 This is an electronic speed controller for brushless DC motors. The Controller was designed with 3 MOSFET half bridges. Gates of the mosfets were
 				triggered by TLP250 Optocoupler. Each MOSFET had its own optocoupler acting as a MOSFET driver. The high side of the MOSFETs were equipped with bootstrapping 
 				mechanism to provide reliable performance. The synchronization of the gates were controlled by an Arduino. 
@@ -308,7 +334,7 @@
 					<div class="container">
 				<li><h2><a href="https://oshwlab.com/sakibchowdhury131/triac_iot_taru_notouch">AC Equipment Power Controller</a></h2></li>
 				<br>
-				<img style="width: 100%" src="img/Screenshot from 2022-09-27 13-42-01.png"><br>
+				<img style="width: 60%" src="img/Screenshot from 2022-09-27 13-42-01.png"><br>
 				
                 This project is an AC equipment power controller circuit.
 				This hardware modulates the triggering time of triac bridges to control the intensity of Alternating Current Supported Devices. This can be primarily used with generic AC
@@ -316,7 +342,7 @@
 
 				<br>
 				<a style="color: red;" href="https://oshwlab.com/sakibchowdhury131/triac_iot_taru_notouch">Hardware Design Files Available Here</a>.
-				<iframe src="https://drive.google.com/file/d/1vIfEmfwVd8GHtlgKuiF_k_0VnCV_WH9I/preview" width="100%" height="450" allow="autoplay"></iframe>
+				<iframe src="https://drive.google.com/file/d/1vIfEmfwVd8GHtlgKuiF_k_0VnCV_WH9I/preview" width="60%" height="450" allow="autoplay"></iframe>
 					</div>
 				</div>
 				
@@ -360,33 +386,6 @@
 					</div>
 				</div>
 
-
-				
-
-				<br><br><br>
-				<div class="card">
-					<div class="container">
-				<li><h2><a href="#">Optimizing Bengali License Plate Recognition with Document Understanding Transformers</a></h2></li>
-				<br>
-				We are developing this tool to deploy it at <a href = 'https://goo.gl/maps/biCXvGxceA7j2rXt6'>Kalna Bridge Toll Plaza</a>.
-						<br>
-						<img src="img/License Plate Recognition - Document Transformers.jpg">
-						
-						<br> <br>
-						We have finetuned YoLoV8 on License Plates. YoLo provides the region of interest. We have also trained a document understanding transformer model
-						that can parse bengali texts from a image. Our experimentation has proved that document understanding transformers are mroe powerful compared to OCR methods.
-						We generated 2 million synthetic images of license plates and trained the document understanding transformer with them. Afterwards, we finetuned the model with 
-						real world data.
-						We have 3 cameras placed at 3 different angles at the toll plaza. The software individually detects and recognizes a single vehicle from 3 different angles and 
-						applies majority voting algorithm to reduce the misprediction probability. 
-						<br><br>
-						These two Colab notebooks can be explored to understand the training process of License Place Detector and Recognition System. 
-						<br>
-						<a style="color: red;" href="https://colab.research.google.com/drive/1bnxy8a19s8aC4RZfQw8CgQUmwaqUpw_-?usp=sharing">License Plate Detector</a>
-						<br>
-						<a style="color: red;" href="https://colab.research.google.com/drive/1TXHety4JCzbykU4Dun5ljKFtBjkDVUro?usp=sharing">License Plate Recognition System</a>
-					</div>
-				</div>
 
 
 
