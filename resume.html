@@ -10,6 +10,30 @@
 	
   
 </head>
+
+<style>
+    .pdf {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+    }
+
+    .pdf,
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1,
+    h3 {
+        text-align: center;
+    }
+
+    h1 {
+        color: green;
+    }
+</style>
 <body>
     	<!-- Navigation -->
 	<div class="main-nav">
@@ -37,9 +61,11 @@
         <div>
             <h1>Resume</h1>
 
-			<ul>
-				<iframe src="sakib_resume.pdf" style="width: 100%; height: 100vh;" frameborder="0"></iframe>
-			</ul>
+			<object class="pdf" 
+            data="sakib_resume.pdf"
+            width="800"
+            height="500">
+    		</object>
 
 			
         </div>
@@ -82,13 +108,5 @@
 	<script src="js/typed.min.js"></script>
     <script src="js/kube.min.js"></script>
     <script src="js/site.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.6.172/pdf.min.js"></script>
-    <script>
-		function newTyped(){}$(function(){$("#typed").typed({
-		// Change to edit type effect
-		strings: ["Sakib Chowdhury"],
-
-		typeSpeed:90,backDelay:700,contentType:"html",loop:!0,resetCallback:function(){newTyped()}}),$(".reset").click(function(){$("#typed").typed("reset")})});
-    </script>
 </body>
 </html>
