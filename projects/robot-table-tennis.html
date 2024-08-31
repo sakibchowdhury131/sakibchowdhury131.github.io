@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Sakib Chowdhury</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../css/kube.min.css" />
+    <link rel="stylesheet" href="../css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../css/custom.min.css" />
+    <link rel="shortcut icon" href="../img/favicon.png" />
+	<link href='https://fonts.googleapis.com/css?family=Playfair+Display+SC:700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Lato:700,700' rel='stylesheet' type='text/css'>
+	<style>
+		.intro h1:before {
+			/* Edit this with your name or anything else */
+			content: 'Hey!! There';
+		}   
+	</style>
+</head>
+<body>
+	<!-- Navigation -->
+	<div class="main-nav">
+		<div class="container">
+			<header class="group top-nav">
+				<div class="navigation-toggle" data-tools="navigation-toggle" data-target="#navbar-1">
+				    <span class="logo">Menu</span>
+				</div>
+			    <nav id="navbar-1" class="navbar item-nav">
+				    <ul>
+				        <li><a href="../index.html#about">About</a></li>
+						<li><a href="../research.html">Research</a></li>
+				        <li class="active"><a href="../projects.html">Projects</a></li>
+						<li><a href="../blog.html">Personal Blog</a></li>
+						<li><a href="../contacts.html">Contacts</a></li>
+				        <!--<li><a href="#skills">Skills</a></li>-->
+				    </ul>
+				</nav>
+			</header>
+		</div>
+	</div>
+
+	<!-- Projects -->
+	<div class="work section second" id="projects">
+		<div class="container">
+			<h1><a href="../projects.html">Projects</a> > <a href="PRIVACY_PRESERVING_GPS_WITH_OPEN_STREET_MAP_INTERFACE_EEE416.html">Privacy preserving GPS with open street map interface</a></h1>
+            <br>
+            [THIS PAGE IS UNDER CONSTRUCTION]
+            <br>
+            <br>
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/Zvk5PcIrFHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <br><br><br>
+            This project was a part of micro-processor lab course during 4th year of my undergraduate program at <a href="https://buet.ac.bd">BUET</a>. The system
+            efficiently incorporated IoT and web frameworks to establish an interesting tracking system. <br>
+
+            This project has two separate aspects. The first one is the electrical part. And the second one is the software part. <br>
+
+            Electrical Part requires the following components: <br>
+			<ul>
+                <li>ESP32</li>
+                <li>Neo6m GPS</li>
+                <li>LCD Display</li>
+                <li>STM32 (Optional)</li>
+			</ul>
+
+            And the software part includes: 
+            <ul>
+                <li>Django</li>
+                <li>Leaflet JS</li>
+                <li>Microcontroller firmware</li>
+            </ul>
+
+
+            <br><br><br><br>
+
+            All the necessary codes are available <a href="https://github.com/sakibchowdhury131/ESP8266_NEO6MGPS_LEAFLETJS">here</a>. <br>
+            There GPS_MQTT directory contains the firmware for ESP8266. Change the MQTT host address, username and password.You can use any MQTT broker such as adafruit_io or mosquitto CLI.
+            <br><br><br><br>
+            The Django server contains the python scripts. Install paho-mqtt. Install postgres. Check the "requirement.txt" file to setup the virtual environment. Run django server. You must run djangoServer/MapHandler/MQTT_filewrite/MQTTRec.py this file in separate terminal.
+
+             
+
+		</div>
+	</div>
+
+	<!-- Quote -->
+	<!--
+	<div class="quote">
+		<div class="container text-centered">
+			<h1>"Part of the journey is the end".</h1>
+		</div>
+	</div>
+	-->
+
+	<footer>
+		<div class="container">
+			<div class="units-row">
+			    <div class="unit-50">
+			    	<p>Dhaka, Bangladesh</p>
+			    </div>
+			    <div class="unit-50">
+					<ul class="social list-flat right">
+						<li><a href="mailto:sakibchowdhury131@gmail.com"><i class="fa fa-send"></i></a></li>
+						<li><a href="http://twitter.com/sakibchowdhury6"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="http://facebook.com/sakib97"><i class="fa fa-facebook"></i></a></li>
+						<li><a href="https://www.linkedin.com/in/sakib-chowdhury97/"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="https://scholar.google.com/citations?user=nhwkkfAAAAAJ&hl=en"><i class="fa fa-google"></i></a></li>
+						<li><a href="https://github.com/sakibchowdhury131"><i class="fa fa-github"></i></a></li>
+						
+					</ul>
+			    </div>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Javascript -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/typed.min.js"></script>
+    <script src="js/kube.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+		function newTyped(){}$(function(){$("#typed").typed({
+		// Change to edit type effect
+		strings: ["Sakib Chowdhury"],
+
+		typeSpeed:90,backDelay:700,contentType:"html",loop:!0,resetCallback:function(){newTyped()}}),$(".reset").click(function(){$("#typed").typed("reset")})});
+    </script>
+</body>
+</html>
