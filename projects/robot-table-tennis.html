@@ -44,42 +44,35 @@
 	<!-- Projects -->
 	<div class="work section second" id="projects">
 		<div class="container">
-			<h1><a href="../projects.html">Projects</a> > <a href="PRIVACY_PRESERVING_GPS_WITH_OPEN_STREET_MAP_INTERFACE_EEE416.html">Privacy preserving GPS with open street map interface</a></h1>
-            <br>
-            [THIS PAGE IS UNDER CONSTRUCTION]
-            <br>
-            <br>
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/Zvk5PcIrFHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            <br><br><br>
-            This project was a part of micro-processor lab course during 4th year of my undergraduate program at <a href="https://buet.ac.bd">BUET</a>. The system
-            efficiently incorporated IoT and web frameworks to establish an interesting tracking system. <br>
+			<h1>"IVOR" The Tennis Player</h1>
+			<br>
+			<img src="../img/tennis-top-view.gif" width="35%">   <img src="../img/tennis-side-view.gif" width="50%">
+			<br>
+			In this study, we're introducing a new approach to robotic table tennis that zeroes in on accurately predicting where the ball will hit the paddle, using just a tiny bit of data. Unlike other methods that need constant tracking of the ball's position, our technique only needs two quick snapshots of the ball to figure out the collision point. This gives the robot plenty of time to plan its movements and nail the perfect shot. On top of that, we’ve developed a way to estimate the paddle’s hitting speed, ensuring the ball lands exactly where we want it on the table.
+            <br><br>
+			<h3>Construction</h3>
+			<img src="../img/IVOR-body.png" width="50%"></img>
+			<br><br>
+            IVOR has got 6 Degrees of Freedom (DOF), which means it can move around with a lot of precision. Joints 1 through 4 are powered by Xiaomi Cybergear motors, letting them rotate over 360 degrees, so the arm has a really wide range of motion. These joints can hit speeds up to 296 rpm and handle up to 12 N.m of torque. For Joints 5 and 6, we’re using RDS5160 servo motors, which can rotate between 0 to 270 degrees, with a peak speed of 461 degrees/sec and a torque of 6.87 N.m. Joint 6 is where the paddle is attached, and with Joints 4, 5, and 6 set up along the roll, pitch, and yaw axes, the robot can control the paddle’s orientation really precisely, which is key for hitting the ball just right and sending it to the perfect spot on the table.
 
-            This project has two separate aspects. The first one is the electrical part. And the second one is the software part. <br>
-
-            Electrical Part requires the following components: <br>
-			<ul>
-                <li>ESP32</li>
-                <li>Neo6m GPS</li>
-                <li>LCD Display</li>
-                <li>STM32 (Optional)</li>
-			</ul>
-
-            And the software part includes: 
-            <ul>
-                <li>Django</li>
-                <li>Leaflet JS</li>
-                <li>Microcontroller firmware</li>
-            </ul>
+			As for power, the Xiaomi Cybergear motors run on a 24V DC power supply to keep everything moving smoothly. The RDS5160 servos use a 7.4V DC power supply for accurate control. The whole system is controlled by a Raspberry Pi 4, which handles all the joint motor controls and keeps the robot moving in sync.
+			<br><br>
+			<h3>Setup</h3>
+			<img src="../img/setup.png" width="50%"></img>
 
 
-            <br><br><br><br>
-
-            All the necessary codes are available <a href="https://github.com/sakibchowdhury131/ESP8266_NEO6MGPS_LEAFLETJS">here</a>. <br>
-            There GPS_MQTT directory contains the firmware for ESP8266. Change the MQTT host address, username and password.You can use any MQTT broker such as adafruit_io or mosquitto CLI.
-            <br><br><br><br>
-            The Django server contains the python scripts. Install paho-mqtt. Install postgres. Check the "requirement.txt" file to setup the virtual environment. Run django server. You must run djangoServer/MapHandler/MQTT_filewrite/MQTTRec.py this file in separate terminal.
-
-             
+			<br><br>
+			The setup includes the robotic arm, a ball, and a table where the ball bounces before it reaches the paddle. Because the robotic arm has so many degrees of freedom, we've constrained the collision point to a specific plane, x = a. We’ve also marked the target zones on the table, where the ball should land after being hit by the paddle.
+			<br><br><br>
+			<h3>System</h3>
+			<img src="../img/system.png" width="50%"></img>
+			<br>
+			The proposed system’s architecture breaks down like this: The trajectory estimation module figures out the ball’s path and estimates where it’s going to collide with the paddle. Then, the collision-ready module handles motion planning, making sure the paddle gets to that collision point in time. Finally, the ball hit module calculates the paddle’s hitting speed to ensure the ball lands right in the desired spot on the table.
+			<br><br><br>
+			<img src="../img/result.png" width="50%"></img>
+			<br>
+			For the qualitative analysis of the hitting velocity planner, we used a red "X" to mark the intended hitting point. The green marks show where the ball actually landed after being hit by the paddle. As you can see, the balls consistently ended up on the correct side of the court, just like we planned.
+			<br>
 
 		</div>
 	</div>
