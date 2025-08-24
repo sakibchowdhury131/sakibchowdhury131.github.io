@@ -26,6 +26,16 @@
 			/* Edit this with your name or anything else */
 			content: '';
 		}   
+		.projects h1 { margin-bottom: 1rem; }
+		.project-card { margin-top: 1rem; }
+		.project-meta { color:#777; font-size: .95rem; margin:.25rem 0 .75rem; }
+
+		/* responsive 16:9 video */
+		.video-wrap { position: relative; width: 100%; padding-top: 100%; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+		.video-wrap iframe { position: absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+		.project-img { width:100%; height:auto; border-radius:12px; box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+		.project-fig { margin: .75rem 0 0; font-size:.95rem; color:#555; }
 	</style>
 </head>
 <body>
@@ -83,6 +93,96 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Recent Research Projects -->
+	<div class="projects section second" id="recent-projects">
+	<div class="container">
+		<div class="card">
+		<div class="container">
+			<h1>Recents</h1>
+
+			<!-- Project 1 -->
+			
+			<div class="project-card">
+			<div class="units-row units-split wrap">
+				<div class="unit-60">
+				<h2>Convolutional Neural Networks for High-Speed Motion Planning</h2>
+				<div class="project-meta">Motion Planning · PyTorch · Real-time Systems</div>
+				<p>
+					This project builds a low-latency neural motion planner for a mobile manipulator 
+					(Husky base + Franka Panda with a table-tennis paddle) that can intercept fast, 
+					moving targets—like a ball—where classical planners often miss due to 
+					planning delays. Its core value is speed and consistency: inference in ~5 ms 
+					(vs ~100 ms typical for RRTConnect) preserves crucial reaction time for tight-deadline
+					 tasks and enables stable receding-horizon replanning as targets or obstacles move. 
+					 Architecturally, the planner ingests a compact 5×10 “context grid”
+					  (start/goal joints plus up to three 
+					  obstacles encoded as position/orientation/size) and a 64×64 occupancy map, processes 
+					  them with a dual-stream CNN (context stem + residual blocks; map CNN with pooling and 
+					  adaptive averaging), fuses the features through a shared MLP, and outputs (1) a 
+					  feasibility probability, (2) per-joint time breakpoints, and (3) per-joint positions; 
+					  trajectories are reconstructed from ≤K_MAX RDP-compressed keypoints and interpolated 
+					  for smooth, time-parameterized execution, yielding scene-independent, constant-time 
+					  planning that is both fast and robust.
+				</p>
+				</div>
+				<div class="unit-40">
+				<!-- Thumbnail that opens the full image in a new tab -->
+				<a href="img/with_occupancy_map.png" target="_blank" rel="noopener">
+					<img src="img/with_occupancy_map.png" alt="Model effectiveness overview"
+						class="project-img" loading="lazy">
+				</a>
+				<div class="project-fig"></div>
+				</div>
+			</div>
+			</div>
+			<!-- Project 2 -->
+			 <div class="project-card">
+			<div class="units-row units-split wrap">
+				<div class="unit-60">
+				<h2>Learning to Strike Robotic Table Tennis with Residual Learning</h2>
+				<div class="project-meta">Robotics · Control · High-speed Decision Making</div>
+				<p>
+					 Motivated by recent advances in robotic sys-
+						tems’ ability to interact with dynamic environments, we
+						study autonomous robotic table tennis in this paper. We
+						design a high speed robotic arm to play table tennis, and
+						develop a software system that predicts the incoming ball’s
+						trajectory and learns to control the robot arm for striking the
+						ball to the opponent side of the table. Utilizing the idea of
+						residual physics, we develop a residual predictor to predict
+						a striking position for the incoming ball using sparse
+						observation of the ball’s starting trajectory. We control the
+						arm to the contact-ready position, and then use a neural
+						network to output the striking velocity to hit the ball.
+						The neural network is trained through experience using
+						a regression-based learning method. Simulation results in
+						a robotic simulator demonstrate the superior performance,
+						benefiting from efficient learning
+				</p>
+				</div>
+				<div class="unit-40">
+				<!-- Replace FILE_ID with your Drive file ID OR paste your share link and change 'view' to 'preview' -->
+				<div class="video-wrap" aria-label="Project video: Learning to Strike Robotic Table Tennis">
+					<iframe
+					src="https://drive.google.com/file/d/1wYJzdrf81k48AhfSG0YCn3KfSJ7iXxL6/preview"
+					allow="autoplay; encrypted-media"
+					allowfullscreen
+					loading="lazy"
+					title="Learning to Strike Robotic Table Tennis">
+					</iframe>
+				</div>
+				</div>
+			</div>
+			</div>
+
+			
+
+		</div>
+		</div>
+	</div>
+	</div>
+
 
 	<!-- Update -->
 	<div class="Update second" id="update">
