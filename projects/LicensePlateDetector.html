@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Sakib Chowdhury</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../css/kube.min.css" />
+    <link rel="stylesheet" href="../css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../css/custom.min.css" />
+    <link rel="shortcut icon" href="../img/favicon.png" />
+	<link href='https://fonts.googleapis.com/css?family=Playfair+Display+SC:700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Lato:700,700' rel='stylesheet' type='text/css'>
+	<style>
+		.intro h1:before {
+			/* Edit this with your name or anything else */
+			content: 'Hey!! There';
+		}   
+	</style>
+</head>
+<body>
+	<!-- Navigation -->
+	<div class="main-nav">
+		<div class="container">
+			<header class="group top-nav">
+				<div class="navigation-toggle" data-tools="navigation-toggle" data-target="#navbar-1">
+				    <span class="logo">Menu</span>
+				</div>
+			    <nav id="navbar-1" class="navbar item-nav">
+				    <ul>
+				        <li><a href="../index.html#about">About</a></li>
+						<li><a href="../research.html">Research</a></li>
+				        <li class="active"><a href="../projects.html">Projects</a></li>
+						<li><a href="../blog.html">Personal Blog</a></li>
+						<li><a href="../contacts.html">Contacts</a></li>
+				        <!--<li><a href="#skills">Skills</a></li>-->
+				    </ul>
+				</nav>
+			</header>
+		</div>
+	</div>
+
+	<!-- Projects -->
+	<div class="work section second" id="projects">
+		<div class="container">
+			<h1>Bangla License Plate Detector with YoLo and Vision Transformers</h1>
+			
+			<img src="../img/License Plate Recognition - Document Transformers.jpg">
+						
+						<br> <br>
+						We have finetuned YoLoV8 on License Plates. YoLo provides the region of interest. We have also trained a document understanding transformer model
+						that can parse bengali texts from a image. Our experimentation has proved that document understanding transformers are mroe powerful compared to OCR methods.
+						We generated 2 million synthetic images of license plates and trained the document understanding transformer with them. Afterwards, we finetuned the model with 
+						real world data.
+						We have 3 cameras placed at 3 different angles at the toll plaza. The software individually detects and recognizes a single vehicle from 3 different angles and 
+						applies majority voting algorithm to reduce the misprediction probability. 
+						<br><br>
+						These two Colab notebooks can be explored to understand the training process of License Place Detector and Recognition System. 
+						<br>
+						<a style="color: red;" href="https://colab.research.google.com/drive/1bnxy8a19s8aC4RZfQw8CgQUmwaqUpw_-?usp=sharing">License Plate Detector</a>
+						<br>
+						<a style="color: red;" href="https://colab.research.google.com/drive/1TXHety4JCzbykU4Dun5ljKFtBjkDVUro?usp=sharing">License Plate Recognition System</a>
+		</div>
+	</div>
+
+	<!-- Quote -->
+	<!--
+	<div class="quote">
+		<div class="container text-centered">
+			<h1>"Part of the journey is the end".</h1>
+		</div>
+	</div>
+	-->
+
+	<footer>
+		<div class="container">
+			<div class="units-row">
+			    <div class="unit-50">
+			    	<p>New Jersey, USA</p>
+			    </div>
+			    <div class="unit-50">
+					<ul class="social list-flat right">
+						<li><a href="mailto:sakibchowdhury131@gmail.com"><i class="fa fa-send"></i></a></li>
+						<li><a href="http://twitter.com/sakibchowdhury6"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="http://facebook.com/sakib97"><i class="fa fa-facebook"></i></a></li>
+						<li><a href="https://www.linkedin.com/in/sakib-chowdhury97/"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="https://scholar.google.com/citations?user=nhwkkfAAAAAJ&hl=en"><i class="fa fa-google"></i></a></li>
+						<li><a href="https://github.com/sakibchowdhury131"><i class="fa fa-github"></i></a></li>
+						
+					</ul>
+			    </div>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Javascript -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/typed.min.js"></script>
+    <script src="js/kube.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+		function newTyped(){}$(function(){$("#typed").typed({
+		// Change to edit type effect
+		strings: ["Sakib Chowdhury"],
+
+		typeSpeed:90,backDelay:700,contentType:"html",loop:!0,resetCallback:function(){newTyped()}}),$(".reset").click(function(){$("#typed").typed("reset")})});
+    </script>
+</body>
+</html>
