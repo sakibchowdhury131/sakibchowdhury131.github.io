@@ -52,86 +52,45 @@
 	<div class="work section second" id="research">
 		<div class="container">
 			<h1>Research</h1>
-			My research is focused on studying computer vision and robot motion control in complex dynamic environments. I am working under the supervision of <a href = 'https://personal.stevens.edu/~yguo1/'>Dr. Yi Guo</a>. 
-			I have worked with <a href="https://sites.google.com/site/drshaikhfattah/">Dr Sheikh Anowarul Fattah</a>, Professor, Department of EEE, BUET in the past. Our research is focused on biomedical disease identification through computer vision and machine learning techniques. Besides, as part of my job as a Research Engineer
-			at <a href="http://celloscope.net/">Celloscope</a>, i have been working on NLP tasks (such as: implementation of ASR, TTS, NLU Based Chatbot) etc. since December 2021. Some of our works are published as research
-			articles. I have completed my undergrad thesis under the supervision of <a href="https://sites.google.com/site/apratimbuet/home?authuser=0">Dr Apratim Roy</a>, Department of EEE, BUET. You can find link to my undergrad thesis paper <a href="#ug_thesis">below</a>. I have also
-			worked as a research assistant at Bangladesh University of Engineering and Technology under the supervision of <a href="https://sites.google.com/site/abmalimalislam/home">Dr. A. B. M. Alim Al Islam</a>.
+			My research is focused on robot learning for mobile manipulators in complex dynamic environments. I am working under the supervision of <a href = 'https://personal.stevens.edu/~yguo1/'>Dr. Yi Guo</a>. 
+			I have worked with <a href="https://sites.google.com/site/drshaikhfattah/">Dr Sheikh Anowarul Fattah</a>, Professor, Department of EEE, BUET in the past. Our research was focused on biomedical disease identification through computer vision and machine learning techniques. Besides, i worked as a machine learning research engineer
+			at <a href="http://celloscope.net/">Celloscope Ltd.</a> where i have worked on NLP tasks (such as: implementation of ASR, TTS, NLU Based Chatbot) etc. I have completed my undergrad thesis under the supervision of <a href="https://sites.google.com/site/apratimbuet/home?authuser=0">Dr Apratim Roy</a>, Department of EEE, BUET. I have also
+			worked as an undergraduate research assistant at Bangladesh University of Engineering and Technology under the supervision of <a href="https://sites.google.com/site/abmalimalislam/home">Dr. A. B. M. Alim Al Islam</a>.
 			
 			<br><br><br>
-
-
-			<h1> Current Works </h1>
 
 
 			<ul class="work-list">
 				<div class="card">
 					<div class="container">
 						<li><a style = 'font-size: 25px' href="projects/robot-table-tennis.html">Robot Table-Tennis Player</a></li>
-						We are using our custom designed robot "IVOR", named after the father of table tennis Ivor Montagu. It is capable of determining the intercept point for the incoming ball with only two consecutive position values.
-						It is also able to produce hitting maneuvers ensuring the ball lands on the desired location on the opposite site of the courts. <a href="projects/robot-table-tennis.html" style="color: red;">Details</a>
+						We have designed a robotic manipulator that can function as a table tennis player with peak striking velocity of 15 m/s. Our perception system is powered by intel realsense RGB-D depth sensing cameras.
+						We have studied the use of residual learning with the context of athletic intelligence in robotics. <a href="projects/robot-table-tennis.html" style="color: red;">Details</a>
 						<br><br><br>
-						<img src="img/tennis-top-view.gif" width="18%">   <img src="img/tennis-side-view.gif" width="50%"> <img src="img/IMG_3263.JPG" width="30%">
-						
+						<img src="img/tennis-top-view.gif" width="18%">   <img src="img/tennis-side-view.gif" width="50%"> <img src="img/IMG_3263.JPG" width="30%">			
 						<br> <br>
-						
 						<br>
-
-						
 					</div>
 				</div>
 			</ul>
 
-
-			<h1>Past Research</h1>
-			<h1>2023</h1>
 			<ul class="work-list">
 				<div class="card">
 					<div class="container">
 						<li><a style = 'font-size: 25px'>Neural Voice Banking System</a></li>
-						We have developed the first voice banking system in Bangladesh here at Celloscope. It is a speech-to-speech engine that allows users to do
+						We have developed a voice banking system in Bangla language at Celloscope. It is a speech-to-speech system that allows users to do
 						 regular banking tasks (such as balance transfer and balance inquiry) just by using their voice. Our system generates 
-						 synthetic voice as response in order to provide a voice-to-voice conversation experience. This system is currently integrated into the voice banking 
-						 app of Agrani Bank. We have integrated numerous SOTA AI systems to ensure safe and secure banking experience for the users. 
+						 synthetic voice as output in order to provide a voice-to-voice conversation experience. This system is currently integrated into the voice banking 
+						 app of Agrani Bank. We have integrated numerous SOTA AI systems to ensure safe and secure banking experience for the users. <a href="https://ai.celloscope.net/keycloak/realms/celloscope_ai/protocol/openid-connect/auth?client_id=webjs_client&redirect_uri=https%3A%2F%2Fai.celloscope.net%2Fai-banking%2Fdemo.html&state=a9131f8e-88db-4276-8a76-c92258931d74&response_mode=fragment&response_type=code&scope=openid&nonce=af69a9bf-9347-4ae5-ba91-9fc29b4f6daf">Demo is available here.</a>
 						<br><br><br>
 						<img src="img/2497756507_speech to speech banking system AI _xl-beta-v2-2-2.png" width="50%">
-						
 						<br> <br>
-						
 						<br>
-
-						
 					</div>
 				</div>
 			</ul>
 			<br><br>
 
-
-
-			<ul class="work-list">
-				<div class="card">
-					<div class="container">
-						<li><a style = 'font-size: 25px'>Rail Cop</a></li>
-						Derailment is a significant problem in the rail system in developing and underdeveloped countries. Derailment can occur for 
-						number of reasons. For example, natural disasters or unethical activities by human. However, a complete detection system for 
-						derailment is yet unavailable in the market. Our approach focuses on developing such a system that can sense the vibrations 
-						of the railtrack and can detect whether there is a derailment within a certain range of the track. 
-						<br>
-						<img src="img/Screenshot from 2022-11-02 17-30-39.png" width="50%">
-						
-						<br> <br>
-						Our current prototype uses multichannel piezoelectric crystals to sense the vibrations in railtracks and convert the mechanical signals
-						to electrical signals. For processing the signals and making decisions, we have trained and deployed tinyML and EdgeML models in RP2040 
-						and Atmel processors. 
-						<br>
-						<img src="img/Screenshot from 2022-11-02 17-23-14.png" width="50%">
-						
-					</div>
-				</div>
-			</ul>
-
-			
-			<h1>2022</h1>
 
 			<ul class="work-list">
 				<div class="card">
@@ -206,9 +165,7 @@
 					</div>
 				</div>
 			</ul>
-			
-			<h1>2021</h1>
-			
+
 			<ul class="work-list">
 				<div class="card">
 					<div class="container">
@@ -240,7 +197,7 @@
 				</div>
 
 			</ul>
-			<h1>2020</h1>
+
 			<ul class="work-list">
 				<div class="card">
 					<div class="container">
@@ -264,8 +221,30 @@
 				<br>
 				<img width="50%" src="img/Screenshot from 2022-09-28 16-00-45.png">
 			</ul>
+
+			<ul class="work-list">
+				<div class="card">
+					<div class="container">
+						<li><a style = 'font-size: 25px'>Rail Cop</a></li>
+						Derailment is a significant problem in the rail system in developing and underdeveloped countries. Derailment can occur for 
+						number of reasons. For example, natural disasters or unethical activities by human. However, a complete detection system for 
+						derailment is yet unavailable in the market. Our approach focuses on developing such a system that can sense the vibrations 
+						of the railtrack and can detect whether there is a derailment within a certain range of the track. 
+						<br>
+						<img src="img/Screenshot from 2022-11-02 17-30-39.png" width="50%">	
+						<br> <br>
+						Our current prototype uses multichannel piezoelectric crystals to sense the vibrations in railtracks and convert the mechanical signals
+						to electrical signals. For processing the signals and making decisions, we have trained and deployed tinyML and EdgeML models in RP2040 
+						and Atmel processors. 
+						<br>
+						<img src="img/Screenshot from 2022-11-02 17-23-14.png" width="50%">
+					</div>
+				</div>
+			</ul>
 		</div>
 	</div>
+
+	
 
 	<!-- Quote -->
 	<!--
