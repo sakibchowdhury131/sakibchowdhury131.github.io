@@ -1,256 +1,103 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>How Fast Can We Plan It? — Neural Motion Planner (Demo Paper)</title>
-  <style>
-    :root{
-      --bg:#ffffff;
-      --panel:#ffffff;
-      --ink:#111827;          /* gray-900 */
-      --muted:#4b5563;        /* gray-600 */
-      --accent:#0b5fff;       /* blue */
-      --accent-2:#7c3aed;     /* purple */
-      --ok:#059669;           /* green-600 */
-      --warn:#b45309;         /* amber-700 */
-      --danger:#dc2626;       /* red-600 */
-      --border:#e5e7eb;       /* gray-200 */
-      --shadow: 0 6px 22px rgba(0,0,0,0.06);
-      --radius: 12px;
-      --pad: 18px;
-    }
-    html, body {height:100%;}
-    body{
-      margin:0; background: var(--bg);
-      color:var(--ink);
-      font: 16px/1.72 system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, sans-serif;
-      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-    }
-    a{ color: var(--accent); text-decoration: none; }
-    a:hover{ text-decoration: underline; }
-    .wrap{ max-width: 1060px; margin: 0 auto; padding: 32px 20px 80px; }
-
-    header.hero{ display:grid; grid-template-columns: 1.3fr 1fr; gap: 24px; align-items:start; margin: 8px 0 20px; }
-    .hero .card{ background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
-    h1{ font-size: clamp(28px, 5vw, 42px); line-height: 1.15; margin: 8px 0 10px; }
-    .subtitle{ color: var(--muted); font-size: 15px; }
-
-    nav.toc{ position: sticky; top: 16px; align-self:start; background: var(--panel); border:1px solid var(--border); border-radius: var(--radius); padding: var(--pad); box-shadow: var(--shadow); }
-    nav.toc h3{ margin: 6px 0 10px; font-size: 13px; color: var(--muted); letter-spacing:.06em; text-transform: uppercase; }
-    nav.toc ul{ list-style: none; margin:0; padding:0; font-size: 14px; }
-    nav.toc li{ margin: 6px 0; }
-
-    section{ background: var(--panel); border:1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 22px 0; box-shadow: var(--shadow); }
-    section h2{ margin-top: 0; font-size: 24px; }
-    section h3{ font-size: 18px; margin-top: 20px; }
-
-    .fig{ background: #fafafa; border:1px solid var(--border); border-radius: 10px; padding: 12px; margin: 14px 0; }
-    .fig img, .fig iframe, .fig object{ width:100%; height:auto; border:0; border-radius: 8px; display:block; background:#fff; }
-    .caption{ font-size: 13px; color: var(--muted); margin-top: 8px; }
-
-    /* responsive video embed */
-    .video{ position: relative; padding-top: 56.25%; /* 16:9 */ }
-    .video iframe{ position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; border-radius: 8px; }
-
-    .kbd{ background:#f8fafc; border:1px solid var(--border); border-radius: 6px; padding: 1px 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
-    code{ background:#f8fafc; border:1px solid var(--border); padding:2px 6px; border-radius:6px; }
-
-    .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .pill{ display:inline-block; padding:.22rem .62rem; border-radius:999px; border:1px solid var(--border); background: #f9fafb; color: var(--muted); font-size: .85rem; }
-
-    details{ border:1px dashed var(--border); border-radius: 10px; padding: 10px 14px; background: #fcfcfd; }
-    details summary{ cursor:pointer; color: var(--accent-2); }
-
-    footer{ color: var(--muted); text-align:center; margin-top: 40px; font-size: 14px; }
-
-    @media (max-width: 900px){ header.hero{ grid-template-columns: 1fr; } }
-  </style>
+    <title> Sakib Chowdhury</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../css/kube.min.css" />
+    <link rel="stylesheet" href="../css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../css/custom.min.css" />
+    <link rel="shortcut icon" href="../img/favicon.png" />
+	<link href='https://fonts.googleapis.com/css?family=Playfair+Display+SC:700' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Lato:700,700' rel='stylesheet' type='text/css'>
+	<style>
+		.intro h1:before {
+			/* Edit this with your name or anything else */
+			content: 'Hey!! There';
+		}   
+	</style>
 </head>
 <body>
-  <div class="wrap">
-    <header class="hero">
-      <div class="card">
-        <h1>How Fast Can We Plan It?<br>Single‑Shot Neural Motion Planner</h1>
-        <p class="subtitle">A compact, CPU‑fast planner that predicts breakpoint times and joint states in one forward pass — reframing planning as perception.</p>
-        <p>
-          <span class="pill">Franka Emika Panda (7‑DoF)</span>
-          <span class="pill">OMPL / RRT‑Connect supervision</span>
-          <span class="pill">PyBullet verification</span>
-        </p>
-      </div>
-      <nav class="toc">
-        <h3>Contents</h3>
-        <ul>
-          <li><a href="#abstract">Abstract</a></li>
-          <li><a href="#novelty">Key Contributions</a></li>
-          <li><a href="#background">RRT‑Connect &amp; RDP</a></li>
-          <li><a href="#method">Method</a>
-            <ul>
-              <li><a href="#planner-overview">Planner Overview</a></li>
-              <li><a href="#context-cnn">Context CNN</a></li>
-              <li><a href="#map-cnn">Map CNN</a></li>
-              <li><a href="#output-heads">Output Heads</a></li>
-            </ul>
-          </li>
-          <li><a href="#loss">Loss &amp; Collision‑Aware FT</a></li>
-          <li><a href="#data">Data Collection</a></li>
-          <li><a href="#experiments">Experiments</a>
-            <ul>
-              <li><a href="#planning-time">Planning Time</a></li>
-              <li><a href="#ball-drop">Ball‑Drop Test</a></li>
-              <li><a href="#spatial">Spatial Dependence</a></li>
-            </ul>
-          </li>
-          <li><a href="#limitations">Limitations</a></li>
-          <li><a href="#conclusion">Conclusion &amp; Future Work</a></li>
-          <li><a href="#refs">References (BibTeX)</a></li>
-        </ul>
-      </nav>
-    </header>
+	<!-- Navigation -->
+	<div class="main-nav">
+		<div class="container">
+			<header class="group top-nav">
+				<div class="navigation-toggle" data-tools="navigation-toggle" data-target="#navbar-1">
+				    <span class="logo">Menu</span>
+				</div>
+			    <nav id="navbar-1" class="navbar item-nav">
+				    <ul>
+				        <li><a href="../index.html#about">About</a></li>
+						<li><a href="../research.html">Research</a></li>
+				        <li class="active"><a href="../projects.html">Projects</a></li>
+						<li><a href="../blog.html">Personal Blog</a></li>
+						<li><a href="../contacts.html">Contacts</a></li>
+				        <!--<li><a href="#skills">Skills</a></li>-->
+				    </ul>
+				</nav>
+			</header>
+		</div>
+	</div>
 
-    <section id="abstract">
-      <h2>Abstract</h2>
-      <p>
-        We present a single‑shot neural motion planner that maps a compact scene context and a 2D occupancy map to a small set of trajectory breakpoints (times and joint states) and a feasibility score in one forward pass. Trained on RRT‑Connect demonstrations compressed with Ramer–Douglas–Peucker (RDP) and refined with collision‑aware fine‑tuning, the planner delivers single‑digit millisecond CPU latency with far lower variance than classical tree‑based planners. In a ball‑drop interception benchmark it yields a smaller critical height, reallocating precious time from planning to execution.
-      </p>
-    </section>
+	<!-- Projects -->
+	<div class="work section second" id="projects">
+		<div class="container">
+			<h1>Electronic Speed Controller for Brushless DC Motors</h1>
+			
+			<br>
+                <img src="../img/IMG_20190207_043602.jpg" width="50%" onclick="enlargeImg()" id="img50"><br>
+                This is an electronic speed controller for brushless DC motors. The Controller was designed with 3 MOSFET half bridges. Gates of the mosfets were
+				triggered by TLP250 Optocoupler. Each MOSFET had its own optocoupler acting as a MOSFET driver. The high side of the MOSFETs were equipped with bootstrapping 
+				mechanism to provide reliable performance. The synchronization of the gates were controlled by an Arduino. 
+				
+				<br>
+				<a style="color: red;" href="https://drive.google.com/drive/folders/1-Yk09b7HAfHFt4LVzDm84w1Wfn8-JmX4?usp=sharing">Design and codes</a>.
+		</div>
+	</div>
 
-    <section id="demo-video">
-      <h2>Demo Video</h2>
-      <div class="fig">
-        <div class="video">
-          <!-- Replace FILE_ID with your Google Drive file ID -->
-          <iframe src="https://drive.google.com/file/d/1MYmKsxWrB-P745BOp-ULJyalyufqRVpB/preview" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        </div>
-        <div class="caption">Robot motion demo. Franka Emika Panda Planning and Executing short motion with our proposed planner.</div>
-      </div>
-    </section>
+	<!-- Quote -->
+	<!--
+	<div class="quote">
+		<div class="container text-centered">
+			<h1>"Part of the journey is the end".</h1>
+		</div>
+	</div>
+	-->
 
-    <section id="novelty">
-      <h2>Key Contributions</h2>
-      <ul>
-        <li>Single‑shot, scene‑wide prediction of an entire trajectory as a compact set of breakpoints, replacing incremental explore‑and‑extend.</li>
-        <li>Compact supervision via RDP‑simplified expert paths; the model learns structural primitives (breakpoints) instead of dense waypoints.</li>
-        <li>Three‑head design (feasibility, timing, states) with goal and smoothness terms, plus collision‑aware fine‑tuning.</li>
-        <li>New time‑critical benchmark (ball‑drop) and spatial planning‑time maps showing lower, more uniform latency than RRT‑Connect.</li>
-      </ul>
-    </section>
+	<footer>
+		<div class="container">
+			<div class="units-row">
+			    <div class="unit-50">
+			    	<p>New Jersey, USA</p>
+			    </div>
+			    <div class="unit-50">
+					<ul class="social list-flat right">
+						<li><a href="mailto:sakibchowdhury131@gmail.com"><i class="fa fa-send"></i></a></li>
+						<li><a href="http://twitter.com/sakibchowdhury6"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="http://facebook.com/sakib97"><i class="fa fa-facebook"></i></a></li>
+						<li><a href="https://www.linkedin.com/in/sakib-chowdhury97/"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="https://scholar.google.com/citations?user=nhwkkfAAAAAJ&hl=en"><i class="fa fa-google"></i></a></li>
+						<li><a href="https://github.com/sakibchowdhury131"><i class="fa fa-github"></i></a></li>
+						
+					</ul>
+			    </div>
+			</div>
+		</div>
+	</footer>
 
-    <section id="background">
-      <h2>Background: RRT‑Connect and RDP</h2>
-      <p>
-        RRT‑Connect grows two trees using a straight‑line local planner, yielding a path that is inherently piecewise‑linear in configuration space. After time‑parameterization, many waypoints are redundant. We compress each expert path with the RDP algorithm, which recursively removes points whose orthogonal deviation to a segment is below a tolerance, keeping only breakpoints that preserve geometry. This shrinks hundreds of waypoints to a handful of key poses and times, simplifying supervision and speeding learning.
-      </p>
-      <div class="fig">
-        <img src="../img/RDP.png" alt="RDP-selected breakpoints on an RRT-Connect trajectory" />
-        <div class="caption">Figure: RDP compresses a dense RRT‑Connect trajectory into a compact sequence of breakpoints.</div>
-      </div>
-    </section>
+	<!-- Javascript -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/typed.min.js"></script>
+    <script src="js/kube.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+		function newTyped(){}$(function(){$("#typed").typed({
+		// Change to edit type effect
+		strings: ["Sakib Chowdhury"],
 
-    <section id="method">
-      <h2>Method</h2>
-
-      <h3 id="planner-overview">Planner Overview</h3>
-      <p>
-        We cast motion generation as a single‑shot mapping from scene context (start, goal, and obstacle descriptors) and a 2D occupancy map to a compact trajectory in joint space. The network predicts a sequence of <code>N</code> breakpoints <code>{(t<sub>i</sub>, θ<sub>i</sub>)}</code> for a 7‑DoF arm, plus a feasibility score; planning is performed in a single forward pass rather than by incremental search. Because RRT‑Connect paths are polylines, a small set of breakpoints suffices to reconstruct the motion, and a CNN can “see” the full environment at once, making latency less sensitive to scene scale.
-      </p>
-      <div class="fig">
-        <object data="How fast can we plan it_.pdf#page=9" type="application/pdf" width="100%" height="560">
-          <p class="caption">Architecture diagram (PDF page 9). If the embed does not display, <a href="How fast can we plan it_.pdf" target="_blank" rel="noopener">open the PDF</a>.</p>
-        </object>
-        <div class="caption">Model architecture (embedded from the report). Replace with a PNG export if preferred.</div>
-      </div>
-
-      <h3 id="context-cnn">Context CNN</h3>
-      <p>
-        Context encodes task and scene parameters—start state, goal state, and obstacle attributes (size, position, orientation). A Conv2D → BatchNorm → ReLU stem, followed by four residual blocks, transforms this structured input into a fixed‑width context embedding that captures interactions among start/goal and obstacle terms.
-      </p>
-
-      <h3 id="map-cnn">Map CNN</h3>
-      <p>
-        The Map CNN ingests a 64×64×<i>C</i> occupancy grid (optionally with distance fields or inflated obstacles) and can concatenate normalized coordinate channels (CoordConv) to ease learning of absolute position. A Conv–BN–ReLU stem leads into residual stages with stride‑2 downsampling (32→64→128 channels), optionally using dilated 3×3 kernels for long‑range context. Global average pooling yields the map embedding, followed by dropout.
-      </p>
-
-      <h3 id="output-heads">Output Heads</h3>
-      <p>
-        Fusing the context and map embeddings, a small MLP produces three heads: (i) feasibility, a sigmoid probability used with binary cross‑entropy; (ii) timing, positive increments accumulated via softplus and cumsum to form breakpoint times with a stop token; and (iii) joint states, either absolute or residual, recovered via cumulative summation. The breakpoints are linearly interpolated and then time‑parameterized to satisfy limits.
-      </p>
-    </section>
-
-    <section id="loss">
-      <h2>Loss and Collision‑Aware Fine‑Tuning</h2>
-      <p>
-        The training objective is a weighted sum of feasibility (BCE), timing and state accuracy (Huber), goal‑consistency, and smoothness on first/second differences. After pretraining, we fine‑tune with a clearance penalty that pushes configurations away from obstacles using a hinge on signed distance (from a distance field or proximity query). This retains timing/goal accuracy while reducing residual contacts, and gradients flow through the differentiable distance surrogate.
-      </p>
-      <details>
-        <summary>Mathematical form (click to expand)</summary>
-        <p>
-          L = λ<sub>feas</sub>L<sub>feas</sub> + λ<sub>t</sub>L<sub>t</sub> + λ<sub>θ</sub>L<sub>θ</sub> + λ<sub>goal</sub>L<sub>goal</sub> + λ<sub>smooth</sub>L<sub>smooth</sub>; &nbsp;
-          L<sub>coll</sub> = mean<sub>i</sub> [max(0, δ − d(θ<sub>i</sub>))]<sup>2</sup>; &nbsp;
-          L<sub>ft</sub> = L + λ<sub>coll</sub>L<sub>coll</sub>.
-        </p>
-      </details>
-    </section>
-
-    <section id="data">
-      <h2>Data Collection</h2>
-      <p>
-        We generate randomized scenes by sampling obstacles and valid start/goal states for a 7‑DoF Panda, plan with OMPL’s RRT‑Connect subject to a timeout, label infeasible scenes accordingly, and compress successful paths with RDP to obtain breakpoint sequences and timestamps. We rasterize each scene into a 2D occupancy grid and store (context, map, simplified breakpoints, feasibility). The dataset comprises 100k samples (80k/20k train/val).
-      </p>
-    </section>
-
-    <section id="experiments">
-      <h2>Experiments</h2>
-
-      <h3 id="planning-time">Planning Time</h3>
-      <p>
-        Boxplots show that classical planners (RRT, PRM, RRT*, RRT‑Connect, EST, etc.) have medians around 95–115&nbsp;ms with wide tails; heuristic variants (TRRT, BiTRRT, PDST) are typically slower and more variable. Our single‑shot planner is tightly concentrated near <b>≈6.5&nbsp;ms</b> with whiskers within 6.0–7.5&nbsp;ms, a 15–26× reduction in median latency and dramatically smaller dispersion.
-      </p>
-      <div class="fig">
-        <img src="../img/planning_time_results.png" alt="Planning time boxplots comparing classical planners with the neural planner" />
-        <div class="caption">Planning‑time distribution across planners (zoomed inset shows our method).</div>
-      </div>
-
-      <h3 id="ball-drop">Ball‑Drop Interception</h3>
-      <p>
-        In a drop‑and‑intercept test, available reaction time scales as <i>t</i> = √(2<i>h</i>/g). Because our plans arrive in single‑digit milliseconds and with low variance, the system succeeds at smaller critical heights than RRT‑Connect—freeing more of the reaction window for execution and improving reliability in time‑critical settings.
-      </p>
-
-      <h3 id="spatial">Spatial Dependence</h3>
-      <p>
-        Mapping goals on concentric circles around home produces spatial planning‑time maps. RRT‑Connect shows pronounced spatial nonuniformity as latency depends on where exploration encounters obstacles. Our single‑shot planner, which reasons over the full map at once, exhibits both lower and more uniform times across space, crucial for predictable control budgets.
-      </p>
-    </section>
-
-    <section id="limitations">
-      <h2>Limitations</h2>
-      <p>
-        The model is trained on static 2D occupancy grids; out‑of‑distribution geometry, fine 3D effects, or moving obstacles can degrade reliability. It lacks probabilistic completeness/optimality guarantees and relies on post‑hoc time‑parameterization for limits. RDP‑compressed supervision can bias toward straighter polylines, and the clearance surrogate used in fine‑tuning approximates geometry. A fixed breakpoint budget constrains very long motions, and porting to new robots/workspaces generally requires new data and retraining. Finally, system‑level responsiveness also depends on perception and control latencies.
-      </p>
-    </section>
-
-    <section id="conclusion">
-      <h2>Conclusion &amp; Future Work</h2>
-      <p>
-        We reframed planning as perception and demonstrated a CPU‑fast single‑shot planner with compact breakpoint outputs, RDP‑based supervision, and collision‑aware fine‑tuning. It achieves consistently lower latency than classical baselines and improves time‑critical success in a ball‑drop test. Future work targets dynamic scenes and receding‑horizon updates, richer geometric encodings and end‑to‑end perception‑to‑plan, integrated kinodynamic constraints and safety certificates, scaling via stronger data/continual learning, and a real‑time ROS 2/MoveIt 2 deployment.
-      </p>
-    </section>
-
-    
-
-    <section>
-      <h2>Downloads</h2>
-      <p>
-        <a href="../img/How fast can we plan it_.pdf" download>Paper PDF</a> ·
-        <a href="../img/RDP.png" download>RDP Figure (PNG)</a> ·
-        <a href="../img/planning_time_results.png" download>Planning Time Boxplots (PNG)</a>
-      </p>
-    </section>
-
-    <footer>
-      © 2025 Neural Motion Planner — Demo webpage assembled from the report materials.
-    </footer>
-  </div>
+		typeSpeed:90,backDelay:700,contentType:"html",loop:!0,resetCallback:function(){newTyped()}}),$(".reset").click(function(){$("#typed").typed("reset")})});
+    </script>
 </body>
 </html>
