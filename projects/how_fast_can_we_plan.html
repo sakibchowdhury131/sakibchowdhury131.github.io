@@ -49,6 +49,10 @@
     .fig img, .fig iframe, .fig object{ width:100%; height:auto; border:0; border-radius: 8px; display:block; background:#fff; }
     .caption{ font-size: 13px; color: var(--muted); margin-top: 8px; }
 
+    /* responsive video embed */
+    .video{ position: relative; padding-top: 56.25%; /* 16:9 */ }
+    .video iframe{ position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; border-radius: 8px; }
+
     .kbd{ background:#f8fafc; border:1px solid var(--border); border-radius: 6px; padding: 1px 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
     code{ background:#f8fafc; border:1px solid var(--border); padding:2px 6px; border-radius:6px; }
 
@@ -110,6 +114,17 @@
       <p>
         We present a single‑shot neural motion planner that maps a compact scene context and a 2D occupancy map to a small set of trajectory breakpoints (times and joint states) and a feasibility score in one forward pass. Trained on RRT‑Connect demonstrations compressed with Ramer–Douglas–Peucker (RDP) and refined with collision‑aware fine‑tuning, the planner delivers single‑digit millisecond CPU latency with far lower variance than classical tree‑based planners. In a ball‑drop interception benchmark it yields a smaller critical height, reallocating precious time from planning to execution.
       </p>
+    </section>
+
+    <section id="demo-video">
+      <h2>Demo Video</h2>
+      <div class="fig">
+        <div class="video">
+          <!-- Replace FILE_ID with your Google Drive file ID -->
+          <iframe src="https://drive.google.com/file/d/1MYmKsxWrB-P745BOp-ULJyalyufqRVpB/preview" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+        <div class="caption">Franka Emika Panda planning and executing short motion using our proposed motion planner.</div>
+      </div>
     </section>
 
     <section id="novelty">
@@ -190,7 +205,7 @@
 
       <h3 id="planning-time">Planning Time</h3>
       <p>
-        Boxplots show that classical planners (RRT, PRM, RRT*, RRT‑Connect, EST, etc.) have medians around 95–115&nbsp;ms with wide tails; heuristic variants (TRRT, BiTRRT, PDST) are typically slower and more variable. Our single‑shot planner is tightly concentrated near <b>≈6.5&nbsp;ms</b> with whiskers within 6.0–7.5&nbsp;ms, a 15–26× reduction in median latency and dramatically smaller dispersion.
+        Boxplots show that classical planners (RRT, PRM, RRT*, RRT‑Connect, EST, etc.) have medians around 95–115&nbsp;ms with wide tails; heuristic variants (TRRT, BiTRRT, PDST) are typically slower and more variable. Our single‑shot planner is tightly concentrated near <b>≈6.4&nbsp;ms</b> with whiskers within 6.0–7.5&nbsp;ms, a 15–26× reduction in median latency and dramatically smaller dispersion.
       </p>
       <div class="fig">
         <img src="../img/planning_time_results.png" alt="Planning time boxplots comparing classical planners with the neural planner" />
@@ -223,14 +238,6 @@
     </section>
 
 
-    <section>
-      <h2>Downloads</h2>
-      <p>
-        <a href="../img/How fast can we plan it_.pdf" download>Paper PDF</a> ·
-        <a href="../img/RDP.png" download>RDP Figure (PNG)</a> ·
-        <a href="../img/planning_time_results.png" download>Planning Time Boxplots (PNG)</a>
-      </p>
-    </section>
 
     <footer>
       © 2025 Neural Motion Planner — Demo webpage assembled from the report materials.
