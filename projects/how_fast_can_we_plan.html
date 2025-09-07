@@ -72,7 +72,7 @@
     <header class="hero">
       <div class="card">
         <h1>How Fast Can We Plan It?<br>Single‑Shot Neural Motion Planner</h1>
-        <p class="subtitle">A compact, CPU‑fast planner that predicts breakpoint times and joint states in one forward pass — reframing planning as perception.</p>
+        <p class="subtitle">A compact, CPU‑fast planner that predicts breakpoint times and joint states in one forward pass — reframing planning as perception. The paper is under review. It can be found here: <a href="https://drive.google.com/file/d/1SMz04vGLR1QnzGfGAorhqAO2HxkBy3Xo/view?usp=drive_link">https://drive.google.com/file/d/1SMz04vGLR1QnzGfGAorhqAO2HxkBy3Xo/view?usp=drive_link</p>
         <p>
           <span class="pill">Franka Emika Panda (7‑DoF)</span>
           <span class="pill">OMPL / RRT‑Connect supervision</span>
@@ -155,12 +155,7 @@
       <p>
         We cast motion generation as a single‑shot mapping from scene context (start, goal, and obstacle descriptors) and a 2D occupancy map to a compact trajectory in joint space. The network predicts a sequence of <code>N</code> breakpoints <code>{(t<sub>i</sub>, θ<sub>i</sub>)}</code> for a 7‑DoF arm, plus a feasibility score; planning is performed in a single forward pass rather than by incremental search. Because RRT‑Connect paths are polylines, a small set of breakpoints suffices to reconstruct the motion, and a CNN can “see” the full environment at once, making latency less sensitive to scene scale.
       </p>
-      <div class="fig">
-        <object data="How fast can we plan it_.pdf#page=9" type="application/pdf" width="100%" height="560">
-          <p class="caption">Architecture diagram (PDF page 9). If the embed does not display, <a href="How fast can we plan it_.pdf" target="_blank" rel="noopener">open the PDF</a>.</p>
-        </object>
-        <div class="caption">Model architecture (embedded from the report). Replace with a PNG export if preferred.</div>
-      </div>
+    
 
       <h3 id="context-cnn">Context CNN</h3>
       <p>
