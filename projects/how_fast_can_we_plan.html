@@ -53,6 +53,9 @@
     .video{ position: relative; padding-top: 56.25%; /* 16:9 */ }
     .video iframe{ position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #000; border-radius: 8px; }
 
+    /* responsive grid for multiple videos */
+    .video-grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+
     .kbd{ background:#f8fafc; border:1px solid var(--border); border-radius: 6px; padding: 1px 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
     code{ background:#f8fafc; border:1px solid var(--border); padding:2px 6px; border-radius:6px; }
 
@@ -71,11 +74,17 @@
   <div class="wrap">
     <header class="hero">
       <div class="card">
-        <h1>How Fast Can We Plan It?<br>Single‑Shot Neural Motion Planner</h1>
-        <p class="subtitle">A compact, CPU‑fast planner that predicts breakpoint times and joint states in one forward pass — reframing planning as perception. The paper is under review. It can be found here: <a href="https://drive.google.com/file/d/1SMz04vGLR1QnzGfGAorhqAO2HxkBy3Xo/view?usp=drive_link">https://drive.google.com/file/d/1SMz04vGLR1QnzGfGAorhqAO2HxkBy3Xo/view?usp=drive_link</p>
+        <h1>How Fast Can We Plan It?<br>Single-Shot Neural Motion Planner</h1>
+        <p class="subtitle">
+          A compact, CPU-fast planner that predicts breakpoint times and joint states in one forward pass — reframing planning as perception.
+          The paper is under review. It can be found here:
+          <a href="https://drive.google.com/file/d/1SMz04vGLR1QnzGfGAorhqAO2HxkBy3Xo/view?usp=drive_link" target="_blank" rel="noopener">
+            https://drive.google.com/file/d/1SMz04vGLR1QnzGfGAorhqAO2HxkBy3Xo/view?usp=drive_link
+          </a>
+        </p>
         <p>
-          <span class="pill">Franka Emika Panda (7‑DoF)</span>
-          <span class="pill">OMPL / RRT‑Connect supervision</span>
+          <span class="pill">Franka Emika Panda (7-DoF)</span>
+          <span class="pill">OMPL / RRT-Connect supervision</span>
           <span class="pill">PyBullet verification</span>
         </p>
       </div>
@@ -84,7 +93,7 @@
         <ul>
           <li><a href="#abstract">Abstract</a></li>
           <li><a href="#novelty">Key Contributions</a></li>
-          <li><a href="#background">RRT‑Connect &amp; RDP</a></li>
+          <li><a href="#background">RRT-Connect &amp; RDP</a></li>
           <li><a href="#method">Method</a>
             <ul>
               <li><a href="#planner-overview">Planner Overview</a></li>
@@ -93,12 +102,12 @@
               <li><a href="#output-heads">Output Heads</a></li>
             </ul>
           </li>
-          <li><a href="#loss">Loss &amp; Collision‑Aware FT</a></li>
+          <li><a href="#loss">Loss &amp; Collision-Aware FT</a></li>
           <li><a href="#data">Data Collection</a></li>
           <li><a href="#experiments">Experiments</a>
             <ul>
               <li><a href="#planning-time">Planning Time</a></li>
-              <li><a href="#ball-drop">Ball‑Drop Test</a></li>
+              <li><a href="#ball-drop">Ball-Drop Test</a></li>
               <li><a href="#spatial">Spatial Dependence</a></li>
             </ul>
           </li>
@@ -112,39 +121,85 @@
     <section id="abstract">
       <h2>Abstract</h2>
       <p>
-        We present a single‑shot neural motion planner that maps a compact scene context and a 2D occupancy map to a small set of trajectory breakpoints (times and joint states) and a feasibility score in one forward pass. Trained on RRT‑Connect demonstrations compressed with Ramer–Douglas–Peucker (RDP) and refined with collision‑aware fine‑tuning, the planner delivers single‑digit millisecond CPU latency with far lower variance than classical tree‑based planners. In a ball‑drop interception benchmark it yields a smaller critical height, reallocating precious time from planning to execution.
+        We present a single-shot neural motion planner that maps a compact scene context and a 2D occupancy map to a small set of trajectory breakpoints (times and joint states) and a feasibility score in one forward pass. Trained on RRT-Connect demonstrations compressed with Ramer–Douglas–Peucker (RDP) and refined with collision-aware fine-tuning, the planner delivers single-digit millisecond CPU latency with far lower variance than classical tree-based planners. In a ball-drop interception benchmark it yields a smaller critical height, reallocating precious time from planning to execution.
       </p>
     </section>
 
+    <!-- UPDATED: multi-video grid -->
     <section id="demo-video">
-      <h2>Demo Video</h2>
-      <div class="fig">
-        <div class="video">
-          <!-- Replace FILE_ID with your Google Drive file ID -->
-          <iframe src="https://drive.google.com/file/d/1MYmKsxWrB-P745BOp-ULJyalyufqRVpB/preview" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <h2>Demo Videos</h2>
+      <div class="video-grid">
+
+        <div class="fig">
+          <div class="video">
+            <iframe
+              src="https://drive.google.com/file/d/1MYmKsxWrB-P745BOp-ULJyalyufqRVpB/preview"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="caption">Franka Emika Panda planning and executing short motion using our proposed motion planner.</div>
         </div>
-        <div class="caption">Franka Emika Panda planning and executing short motion using our proposed motion planner.</div>
+
+        <div class="fig">
+          <div class="video">
+            <iframe
+              src="https://drive.google.com/file/d/1V--zD3m9gTPWQfAV6cneLq1a26HvNu45/preview"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="caption">Demo 2</div>
+        </div>
+
+        <div class="fig">
+          <div class="video">
+            <iframe
+              src="https://drive.google.com/file/d/19kudOLC7EZzmVk3vep2sTXGX4eRxI0DM/preview"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="caption">Demo 3 — brief description.</div>
+        </div>
+
+        <div class="fig">
+          <div class="video">
+            <iframe
+              src="https://drive.google.com/file/d/14e6WaTtK66rlkEq3EsaPmQTaQ6t_kEeX/preview"
+              allow="autoplay; encrypted-media; picture-in-picture"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="caption">Demo 4 — brief description.</div>
+        </div>
+
       </div>
+      <div class="caption">Franka Emika Panda mounted on a Husky Robot, Planning motion from random start to goal joint state.</div>
     </section>
 
     <section id="novelty">
       <h2>Key Contributions</h2>
       <ul>
-        <li>Single‑shot, scene‑wide prediction of an entire trajectory as a compact set of breakpoints, replacing incremental explore‑and‑extend.</li>
-        <li>Compact supervision via RDP‑simplified expert paths; the model learns structural primitives (breakpoints) instead of dense waypoints.</li>
-        <li>Three‑head design (feasibility, timing, states) with goal and smoothness terms, plus collision‑aware fine‑tuning.</li>
-        <li>New time‑critical benchmark (ball‑drop) and spatial planning‑time maps showing lower, more uniform latency than RRT‑Connect.</li>
+        <li>Single-shot, scene-wide prediction of an entire trajectory as a compact set of breakpoints, replacing incremental explore-and-extend.</li>
+        <li>Compact supervision via RDP-simplified expert paths; the model learns structural primitives (breakpoints) instead of dense waypoints.</li>
+        <li>Three-head design (feasibility, timing, states) with goal and smoothness terms, plus collision-aware fine-tuning.</li>
+        <li>New time-critical benchmark (ball-drop) and spatial planning-time maps showing lower, more uniform latency than RRT-Connect.</li>
       </ul>
     </section>
 
     <section id="background">
-      <h2>Background: RRT‑Connect and RDP</h2>
+      <h2>Background: RRT-Connect and RDP</h2>
       <p>
-        RRT‑Connect grows two trees using a straight‑line local planner, yielding a path that is inherently piecewise‑linear in configuration space. After time‑parameterization, many waypoints are redundant. We compress each expert path with the RDP algorithm, which recursively removes points whose orthogonal deviation to a segment is below a tolerance, keeping only breakpoints that preserve geometry. This shrinks hundreds of waypoints to a handful of key poses and times, simplifying supervision and speeding learning.
+        RRT-Connect grows two trees using a straight-line local planner, yielding a path that is inherently piecewise-linear in configuration space. After time-parameterization, many waypoints are redundant. We compress each expert path with the RDP algorithm, which recursively removes points whose orthogonal deviation to a segment is below a tolerance, keeping only breakpoints that preserve geometry. This shrinks hundreds of waypoints to a handful of key poses and times, simplifying supervision and speeding learning.
       </p>
       <div class="fig">
         <img src="../img/RDP.png" alt="RDP-selected breakpoints on an RRT-Connect trajectory" />
-        <div class="caption">Figure: RDP compresses a dense RRT‑Connect trajectory into a compact sequence of breakpoints.</div>
+        <div class="caption">Figure: RDP compresses a dense RRT-Connect trajectory into a compact sequence of breakpoints.</div>
       </div>
     </section>
 
@@ -153,30 +208,29 @@
 
       <h3 id="planner-overview">Planner Overview</h3>
       <p>
-        We cast motion generation as a single‑shot mapping from scene context (start, goal, and obstacle descriptors) and a 2D occupancy map to a compact trajectory in joint space. The network predicts a sequence of <code>N</code> breakpoints <code>{(t<sub>i</sub>, θ<sub>i</sub>)}</code> for a 7‑DoF arm, plus a feasibility score; planning is performed in a single forward pass rather than by incremental search. Because RRT‑Connect paths are polylines, a small set of breakpoints suffices to reconstruct the motion, and a CNN can “see” the full environment at once, making latency less sensitive to scene scale.
+        We cast motion generation as a single-shot mapping from scene context (start, goal, and obstacle descriptors) and a 2D occupancy map to a compact trajectory in joint space. The network predicts a sequence of <code>N</code> breakpoints <code>{(t<sub>i</sub>, θ<sub>i</sub>)}</code> for a 7-DoF arm, plus a feasibility score; planning is performed in a single forward pass rather than by incremental search. Because RRT-Connect paths are polylines, a small set of breakpoints suffices to reconstruct the motion, and a CNN can “see” the full environment at once, making latency less sensitive to scene scale.
       </p>
-    
 
       <h3 id="context-cnn">Context CNN</h3>
       <p>
-        Context encodes task and scene parameters—start state, goal state, and obstacle attributes (size, position, orientation). A Conv2D → BatchNorm → ReLU stem, followed by four residual blocks, transforms this structured input into a fixed‑width context embedding that captures interactions among start/goal and obstacle terms.
+        Context encodes task and scene parameters—start state, goal state, and obstacle attributes (size, position, orientation). A Conv2D → BatchNorm → ReLU stem, followed by four residual blocks, transforms this structured input into a fixed-width context embedding that captures interactions among start/goal and obstacle terms.
       </p>
 
       <h3 id="map-cnn">Map CNN</h3>
       <p>
-        The Map CNN ingests a 64×64×<i>C</i> occupancy grid (optionally with distance fields or inflated obstacles) and can concatenate normalized coordinate channels (CoordConv) to ease learning of absolute position. A Conv–BN–ReLU stem leads into residual stages with stride‑2 downsampling (32→64→128 channels), optionally using dilated 3×3 kernels for long‑range context. Global average pooling yields the map embedding, followed by dropout.
+        The Map CNN ingests a 64×64×<i>C</i> occupancy grid (optionally with distance fields or inflated obstacles) and can concatenate normalized coordinate channels (CoordConv) to ease learning of absolute position. A Conv–BN–ReLU stem leads into residual stages with stride-2 downsampling (32→64→128 channels), optionally using dilated 3×3 kernels for long-range context. Global average pooling yields the map embedding, followed by dropout.
       </p>
 
       <h3 id="output-heads">Output Heads</h3>
       <p>
-        Fusing the context and map embeddings, a small MLP produces three heads: (i) feasibility, a sigmoid probability used with binary cross‑entropy; (ii) timing, positive increments accumulated via softplus and cumsum to form breakpoint times with a stop token; and (iii) joint states, either absolute or residual, recovered via cumulative summation. The breakpoints are linearly interpolated and then time‑parameterized to satisfy limits.
+        Fusing the context and map embeddings, a small MLP produces three heads: (i) feasibility, a sigmoid probability used with binary cross-entropy; (ii) timing, positive increments accumulated via softplus and cumsum to form breakpoint times with a stop token; and (iii) joint states, either absolute or residual, recovered via cumulative summation. The breakpoints are linearly interpolated and then time-parameterized to satisfy limits.
       </p>
     </section>
 
     <section id="loss">
-      <h2>Loss and Collision‑Aware Fine‑Tuning</h2>
+      <h2>Loss and Collision-Aware Fine-Tuning</h2>
       <p>
-        The training objective is a weighted sum of feasibility (BCE), timing and state accuracy (Huber), goal‑consistency, and smoothness on first/second differences. After pretraining, we fine‑tune with a clearance penalty that pushes configurations away from obstacles using a hinge on signed distance (from a distance field or proximity query). This retains timing/goal accuracy while reducing residual contacts, and gradients flow through the differentiable distance surrogate.
+        The training objective is a weighted sum of feasibility (BCE), timing and state accuracy (Huber), goal-consistency, and smoothness on first/second differences. After pretraining, we fine-tune with a clearance penalty that pushes configurations away from obstacles using a hinge on signed distance (from a distance field or proximity query). This retains timing/goal accuracy while reducing residual contacts, and gradients flow through the differentiable distance surrogate.
       </p>
       <details>
         <summary>Mathematical form (click to expand)</summary>
@@ -191,7 +245,7 @@
     <section id="data">
       <h2>Data Collection</h2>
       <p>
-        We generate randomized scenes by sampling obstacles and valid start/goal states for a 7‑DoF Panda, plan with OMPL’s RRT‑Connect subject to a timeout, label infeasible scenes accordingly, and compress successful paths with RDP to obtain breakpoint sequences and timestamps. We rasterize each scene into a 2D occupancy grid and store (context, map, simplified breakpoints, feasibility). The dataset comprises 100k samples (80k/20k train/val).
+        We generate randomized scenes by sampling obstacles and valid start/goal states for a 7-DoF Panda, plan with OMPL’s RRT-Connect subject to a timeout, label infeasible scenes accordingly, and compress successful paths with RDP to obtain breakpoint sequences and timestamps. We rasterize each scene into a 2D occupancy grid and store (context, map, simplified breakpoints, feasibility). The dataset comprises 100k samples (80k/20k train/val).
       </p>
     </section>
 
@@ -200,39 +254,37 @@
 
       <h3 id="planning-time">Planning Time</h3>
       <p>
-        Boxplots show that classical planners (RRT, PRM, RRT*, RRT‑Connect, EST, etc.) have medians around 95–115&nbsp;ms with wide tails; heuristic variants (TRRT, BiTRRT, PDST) are typically slower and more variable. Our single‑shot planner is tightly concentrated near <b>≈6.4&nbsp;ms</b> with whiskers within 6.0–7.5&nbsp;ms, a 15–26× reduction in median latency and dramatically smaller dispersion.
+        Boxplots show that classical planners (RRT, PRM, RRT*, RRT-Connect, EST, etc.) have medians around 95–115&nbsp;ms with wide tails; heuristic variants (TRRT, BiTRRT, PDST) are typically slower and more variable. Our single-shot planner is tightly concentrated near <b>≈6.4&nbsp;ms</b> with whiskers within 6.0–7.5&nbsp;ms, a 15–26× reduction in median latency and dramatically smaller dispersion.
       </p>
       <div class="fig">
         <img src="../img/planning_time_results.png" alt="Planning time boxplots comparing classical planners with the neural planner" />
-        <div class="caption">Planning‑time distribution across planners (zoomed inset shows our method).</div>
+        <div class="caption">Planning-time distribution across planners (zoomed inset shows our method).</div>
       </div>
 
-      <h3 id="ball-drop">Ball‑Drop Interception</h3>
+      <h3 id="ball-drop">Ball-Drop Interception</h3>
       <p>
-        In a drop‑and‑intercept test, available reaction time scales as <i>t</i> = √(2<i>h</i>/g). Because our plans arrive in single‑digit milliseconds and with low variance, the system succeeds at smaller critical heights than RRT‑Connect—freeing more of the reaction window for execution and improving reliability in time‑critical settings.
+        In a drop-and-intercept test, available reaction time scales as <i>t</i> = √(2<i>h</i>/g). Because our plans arrive in single-digit milliseconds and with low variance, the system succeeds at smaller critical heights than RRT-Connect—freeing more of the reaction window for execution and improving reliability in time-critical settings.
       </p>
 
       <h3 id="spatial">Spatial Dependence</h3>
       <p>
-        Mapping goals on concentric circles around home produces spatial planning‑time maps. RRT‑Connect shows pronounced spatial nonuniformity as latency depends on where exploration encounters obstacles. Our single‑shot planner, which reasons over the full map at once, exhibits both lower and more uniform times across space, crucial for predictable control budgets.
+        Mapping goals on concentric circles around home produces spatial planning-time maps. RRT-Connect shows pronounced spatial nonuniformity as latency depends on where exploration encounters obstacles. Our single-shot planner, which reasons over the full map at once, exhibits both lower and more uniform times across space, crucial for predictable control budgets.
       </p>
     </section>
 
     <section id="limitations">
       <h2>Limitations</h2>
       <p>
-        The model is trained on static 2D occupancy grids; out‑of‑distribution geometry, fine 3D effects, or moving obstacles can degrade reliability. It lacks probabilistic completeness/optimality guarantees and relies on post‑hoc time‑parameterization for limits. RDP‑compressed supervision can bias toward straighter polylines, and the clearance surrogate used in fine‑tuning approximates geometry. A fixed breakpoint budget constrains very long motions, and porting to new robots/workspaces generally requires new data and retraining. Finally, system‑level responsiveness also depends on perception and control latencies.
+        The model is trained on static 2D occupancy grids; out-of-distribution geometry, fine 3D effects, or moving obstacles can degrade reliability. It lacks probabilistic completeness/optimality guarantees and relies on post-hoc time-parameterization for limits. RDP-compressed supervision can bias toward straighter polylines, and the clearance surrogate used in fine-tuning approximates geometry. A fixed breakpoint budget constrains very long motions, and porting to new robots/workspaces generally requires new data and retraining. Finally, system-level responsiveness also depends on perception and control latencies.
       </p>
     </section>
 
     <section id="conclusion">
       <h2>Conclusion &amp; Future Work</h2>
       <p>
-        We reframed planning as perception and demonstrated a CPU‑fast single‑shot planner with compact breakpoint outputs, RDP‑based supervision, and collision‑aware fine‑tuning. It achieves consistently lower latency than classical baselines and improves time‑critical success in a ball‑drop test. Future work targets dynamic scenes and receding‑horizon updates, richer geometric encodings and end‑to‑end perception‑to‑plan, integrated kinodynamic constraints and safety certificates, scaling via stronger data/continual learning, and a real‑time ROS 2/MoveIt 2 deployment.
+        We reframed planning as perception and demonstrated a CPU-fast single-shot planner with compact breakpoint outputs, RDP-based supervision, and collision-aware fine-tuning. It achieves consistently lower latency than classical baselines and improves time-critical success in a ball-drop test. Future work targets dynamic scenes and receding-horizon updates, richer geometric encodings and end-to-end perception-to-plan, integrated kinodynamic constraints and safety certificates, scaling via stronger data/continual learning, and a real-time ROS 2/MoveIt 2 deployment.
       </p>
     </section>
-
-
 
     <footer>
       © 2025 Neural Motion Planner — Demo webpage assembled from the report materials.
