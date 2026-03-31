@@ -1,11 +1,52 @@
-# Draco
-A free PSD & HTML resume template.
-See the demo [here](http://draco.afnizarnur.com/) and download the latest release [here](https://github.com/afnizarnur/draco/releases).
-![Draco](https://cloud.githubusercontent.com/assets/4648648/26038614/72fe3772-3936-11e7-8f88-3781aea67bdc.png)
+# sakibchowdhury131.github.io
+
+Personal academic portfolio website for Sakib Chowdhury — M.Sc. student in Robotics at Stevens Institute of Technology and Machine Learning Engineer at Celloscope. The site showcases research, projects, publications, and contact information.
+
+## Features
+
+- About page with biography and research focus (robot motion control, high-speed manipulator controllers)
+- Research page describing ongoing and past research work
+- Projects page with interactive project cards (images/videos, descriptions, tech tags)
+- Publications page listing academic papers
+- Resume page with downloadable PDF resume
+- Contacts page
+- Responsive layout using the Kube CSS framework
+
+## Tech Stack
+
+- HTML5, CSS3, JavaScript
+- [Kube CSS Framework](https://imperavi.com/kube/)
+- Font Awesome icons
+- Google Fonts (Playfair Display SC, Lato)
+- Sass/SCSS for custom styles
+
+## Project Structure
+
+| File / Directory | Description |
+|---|---|
+| `index.html` | Main landing / About page |
+| `research.html` | Research overview page |
+| `projects.html` | Projects showcase page |
+| `publications.html` | Publications listing page |
+| `resume.html` | Resume page |
+| `contacts.html` | Contact information page |
+| `css/` | Compiled CSS files (Kube, Font Awesome, custom) |
+| `scss/` | Source SCSS files |
+| `js/` | JavaScript files |
+| `img/` | Images (avatar, project images) |
+| `fonts/` | Font files |
+| `sakib_resume.pdf` | Downloadable resume PDF |
+
+## Local Development
+
+No build step is required to view the site. Simply open `index.html` in a browser.
+
+To recompile SCSS:
+
+```bash
+sass scss/custom.scss css/custom.min.css
+```
 
 ## License
-<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />
 
-Draco is licensed under Creative Commons [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Which means that you are free to copy and redistribute the material in any medium or format and remix, transform, and build upon the material.
-
-This template is designed and developed by Afnizar Nur Ghifari.
+MIT
