@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Force-Conditioned Imitation Learning — Robot Replay for Vision-Only Force Recovery</title>
+  <meta name="description" content="Force-Conditioned Imitation Learning from Vision-Only Human Demonstrations via Robot Replay. Sakib Chowdhury, Raymond Huang, Vanessa Chen, Yi Guo. Submitted to ICRA 2027.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#1a56db;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .col-wide{ max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    /* Hero */
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 880px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 17px; margin: 0 auto 6px; max-width: 760px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    /* Teaser */
+    .teaser{ padding: 28px 24px 0; }
+    .teaser-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 640px; margin: 0 auto; }
+    .teaser-grid figure{ margin:0; }
+    .teaser-grid video{ width:100%; height:auto; display:block; border-radius: 10px; background:#000; }
+    .teaser-grid figcaption{ text-align:center; font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+    .teaser-grid figcaption b{ color: var(--ink); }
+
+    /* Bands / sections */
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .abstract p{ text-align:center; max-width: 800px; margin: 0 auto; color:#333; }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img, .fig video{ max-width:100%; max-height: 560px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .fig .eq{ font-size: 16px; padding: 6px 0; }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 760px; margin-left:auto; margin-right:auto; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
+    th{ background:#fff; font-weight:700; }
+    td:first-child, th:first-child{ text-align:left; }
+    .win{ color: var(--ok); font-weight: 700; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+    pre{ background:#1a1a1a; color:#e5e7eb; padding:18px 20px; border-radius:10px; overflow-x:auto; font-size: 13px; line-height:1.65; max-width: 760px; margin: 16px auto 0; }
+    pre code{ background:none; border:none; padding:0; color:inherit; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+
+    @media (max-width: 620px){
+      .teaser-grid{ grid-template-columns: 1fr; max-width: 340px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#research">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>Force-Conditioned Imitation Learning from<br>Vision-Only Human Demonstrations via Robot Replay</h1>
+    <div class="authors">
+      Sakib Chowdhury<sup>1</sup> &nbsp;&middot;&nbsp;
+      Raymond Huang<sup>2</sup> &nbsp;&middot;&nbsp;
+      Vanessa Chen<sup>3</sup> &nbsp;&middot;&nbsp;
+      <a href="https://personal.stevens.edu/~yguo1/" target="_blank" rel="noopener">Yi Guo</a><sup>1</sup>
+    </div>
+    <div class="affiliation"><sup>1</sup>Stevens Institute of Technology &nbsp;&nbsp; <sup>2</sup>Georgia Institute of Technology &nbsp;&nbsp; <sup>3</sup>Boston University</div>
+    <div class="venue-badge">Submitted to ICRA 2027 &middot; Under Review</div>
+    <div class="btn-row">
+      <a class="btn" href="force-conditioned-imitation-learning.pdf">Paper (PDF)</a>
+      <a class="btn" href="https://github.com/sakibchowdhury131/force-aware-imitation-learning" target="_blank" rel="noopener">Code</a>
+      <a class="btn secondary" href="#citation">BibTeX</a>
+    </div>
+  </header>
+
+  <div class="teaser">
+    <div class="teaser-grid">
+      <figure>
+        <video autoplay muted loop playsinline controls preload="metadata" poster="web/force-conditioned-poster.jpg">
+          <source src="web/force-conditioned.mp4" type="video/mp4">
+        </video>
+        <figcaption><b>With force conditioning (ours)</b></figcaption>
+      </figure>
+      <figure>
+        <video autoplay muted loop playsinline controls preload="metadata" poster="web/without-force-poster.jpg">
+          <source src="web/without-force.mp4" type="video/mp4">
+        </video>
+        <figcaption><b>Without force</b> (pose-only)</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <section id="abstract" class="band abstract">
+    <div class="col">
+      <h2>Abstract</h2>
+      <p>
+        Contact-rich manipulation requires reasoning about force, not just trajectory, yet standard imitation
+        learning predicts pose alone. Admittance control can regulate contact force, but requires a hand-specified
+        reference force, typically constant and poorly suited to tasks where the appropriate force varies over
+        time. Prior work shows force is best learned as part of the action rather than passively observed, but
+        still requires a dedicated force/torque or tactile sensor. We introduce a method for recovering a
+        time-varying reference wrench from a single, uninstrumented human demonstration: a tool is tracked
+        visually, the trajectory is replayed on the robot under position control, and the external wrench is
+        recovered from onboard joint torque sensing via the robot&rsquo;s own dynamics model &mdash; requiring no
+        wrist force/torque sensor and no instrumentation on the demonstrator. A visuomotor policy jointly predicts
+        reference pose and wrench, supplied at deployment as a time-varying setpoint to a standard admittance
+        controller. On a pasta scooping-and-transfer task, our method achieves higher success and more closely
+        reproduces demonstrated contact force than a pose-only baseline, and generalizes across diffusion,
+        transformer-based, and flow-matching policies, using only 300 seconds of demonstration.
+      </p>
+    </div>
+  </section>
+
+  <section id="highlights">
+    <div class="col">
+      <h2>Highlights</h2>
+      <ul>
+        <li>Recovers time-varying target contact force from vision-only human demonstrations, via robot replay and the robot&rsquo;s own onboard joint-torque sensing &mdash; no wrist force/torque sensor, no instrumentation on the demonstrator.</li>
+        <li>A visuomotor policy that jointly predicts a reference pose <i>and</i> a reference wrench at each timestep, trained on this recovered data.</li>
+        <li>The predicted wrench serves as a time-varying setpoint for standard admittance control at deployment.</li>
+        <li>Raises success from 82.5% (pose-only) to 97.5% on a pasta scooping-and-transfer task, using just five minutes of human demonstration, and generalizes across diffusion, ACT, and flow-matching policies.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="system">
+    <div class="col">
+      <h2>The System &amp; Task</h2>
+      <p>
+        We use a Kinova Jaco2 6-DOF robotic arm with a spherical wrist configuration; each joint is driven by a
+        modular Kinova actuator (K-75, K-75+, K-58) with an integrated torque sensor alongside its position
+        encoder, so joint torque is readable directly at every joint &mdash; no added instrumentation required. Two
+        fixed Intel RealSense RGB-D cameras observe the workspace, in which the robot performs a pasta
+        scooping-and-transfer task: scooping pasta from a pasta box with a 3D-printed rigid spoon end-effector and
+        transferring it to a bowl.
+      </p>
+      <div class="fig">
+        <img src="web/setup.jpg" alt="Experimental setup: two fixed RGB-D cameras observe the Kinova Jaco2 arm performing the pasta scooping-and-transfer task">
+        <div class="caption">Fig. 1 &mdash; Experimental setup. Two fixed RGB-D cameras observe the workspace, in which the Kinova Jaco2 6-DOF arm scoops pasta from the pasta box with a spoon and transfers it to the bowl.</div>
+      </div>
+      <p>
+        The task is inherently contact-rich and safety-relevant: near-zero force is appropriate on approach, force
+        should rise as the spoon engages the pasta, and the right amount varies further with food consistency and
+        fill level &mdash; a single hand-tuned reference force cannot capture this, and a position-only policy has
+        no mechanism to detect or limit excessive contact force if a trajectory drifts.
+      </p>
+    </div>
+  </section>
+
+  <section id="method">
+    <div class="col">
+      <h2>Method</h2>
+
+      <h3 id="overview">Overview</h3>
+      <p>
+        A human demonstrates the task in front of a camera using a handheld tool, whose 6D pose we track. This
+        motion is then <em>replayed on the robot</em> under position control, so it strictly retraces the
+        demonstrated trajectory regardless of contact encountered along the way. While replaying, the robot records
+        its joint torques and, using an estimate of its own dynamics, extracts the external force acting on the
+        tool &mdash; recovering force without ever touching the human demonstration itself. We then generate novel
+        camera viewpoints of each replay episode with 3D Gaussian Splatting so the resulting policy is robust to
+        camera placement, and train a diffusion policy on the recovered pose and force trajectories, deploying it
+        in closed loop with its predicted wrench supplied as a time-varying setpoint to an admittance controller.
+      </p>
+      <div class="fig">
+        <img src="web/system-diagram.png" alt="System overview: human demonstration is tracked and replayed on the robot to recover force, generate novel views, and train the policy">
+        <div class="caption">Fig. 2 &mdash; System overview. Left: a human demonstrates the task with a handheld tool; FoundationPose recovers its 6D pose. Right: the robot replays the tracked trajectory under position control, recovering the external wrench from joint torque while 3D Gaussian Splatting synthesizes novel training viewpoints.</div>
+      </div>
+
+      <h3>Problem Formulation</h3>
+      <p>
+        The task is formulated as an MDP. At each timestep <i>t</i>, the observation
+        o<sub>t</sub> = {I<sub>&tau;</sub>, X<sub>&tau;</sub>, F<sup>ext</sup><sub>&tau;</sub>} over a short history
+        window combines a single-view RGB image, the robot&rsquo;s end-effector pose X &isin; SE(3), and the sensed
+        six-dimensional external wrench F<sup>ext</sup> = [F<sub>x</sub>, F<sub>y</sub>, F<sub>z</sub>, M<sub>x</sub>,
+        M<sub>y</sub>, M<sub>z</sub>]<sup>&#8868;</sup>, recovered from onboard joint torque. The action
+        a<sub>t</sub> = {X<sup>r</sup><sub>&tau;</sub>, F<sup>r</sup><sub>&tau;</sub>} is a future chunk of a
+        <b>reference pose</b> and <b>reference wrench</b> &mdash; not commands sent directly to the low-level
+        controller, but the time-varying setpoint supplied to a downstream admittance controller:
+      </p>
+      <div class="fig">
+        <div class="eq">M<sub>d</sub> ë + D<sub>d</sub> ė + K<sub>d</sub> e = F<sup>ext</sup> &minus; F<sup>r</sup>,&nbsp;&nbsp; e = X &minus; X<sup>r</sup></div>
+        <div class="caption" style="text-align:center;">Admittance control: a virtual mechanical relationship (inertia M<sub>d</sub>, damping D<sub>d</sub>, stiffness K<sub>d</sub>) between the pose error <i>e</i> and the deviation between sensed and reference wrench.</div>
+      </div>
+
+      <h3 id="replay">Robot Replay &amp; Force Recovery</h3>
+      <p>
+        Human demonstrations are collected with <b>no robot present</b> and <b>no instrumentation on the
+        demonstrator</b>. A human performs the task with a standard spoon in front of a fixed camera;
+        <a href="https://arxiv.org/abs/2312.08344" target="_blank" rel="noopener">FoundationPose</a> tracks the 6D
+        pose of the spoon at every frame. A fixed ChArUco board provides a common task frame shared between the
+        camera and the robot, so the tracked tool trajectory can be re-expressed in the robot&rsquo;s base frame and
+        converted to an end-effector trajectory via a fixed tool-to-end-effector transform and inverse kinematics.
+      </p>
+      <div class="fig">
+        <img src="web/coordinate-systems.png" alt="Coordinate frames: camera, tool, task, end-effector, and robot base frames used to transfer the tracked demonstration onto the robot">
+        <div class="caption">Fig. 3 &mdash; Coordinate frames used to carry the tracked tool motion from the human demonstration into the robot&rsquo;s base frame: camera, tool, task (ChArUco board), end-effector (EEF), and robot base.</div>
+      </div>
+      <p>
+        The robot then executes this trajectory under strict position control while recording joint torque
+        &tau;(t). Measured torque reflects both the robot&rsquo;s own dynamics and any external contact:
+      </p>
+      <div class="fig">
+        <div class="eq">&tau;(t) = M(q)q̈ + C(q,q̇)q̇ + G(q) + J(q)<sup>&#8868;</sup> F<sup>ext</sup></div>
+      </div>
+      <p>
+        We estimate the inertial, Coriolis/centrifugal, and gravitational terms from the robot&rsquo;s own dynamics
+        model (fit once via ridge-regularized least squares over the replay trajectories, detailed in the paper&rsquo;s
+        appendix), subtract them from the measured torque, and attribute the residual to external contact,
+        converting it to a wrench via the Jacobian pseudoinverse:
+      </p>
+      <div class="fig">
+        <div class="eq">F<sup>r</sup>(t) = J(q)<sup>&#8868;+</sup> [ &tau;(t) &minus; M(q)q̈ &minus; C(q,q̇)q̇ &minus; G(q) ]</div>
+        <div class="caption" style="text-align:center;">The recovered reference wrench &mdash; obtained entirely from onboard joint torque, with no wrist force/torque sensor and no instrumentation on the human demonstrator.</div>
+      </div>
+      <p>
+        Because training images come directly from the robot replaying the task &mdash; rather than from the human
+        demonstration itself &mdash; no human-hand or robot-arm segmentation/masking is required at any stage, at
+        training or deployment: the robot is simply present, performing the task, in both.
+      </p>
+
+      <h3 id="novel-view">Novel View Synthesis</h3>
+      <p>
+        The two fixed cameras provide paired stereo images during robot replay, while the deployed policy sees only
+        a single camera. To improve robustness to camera placement without collecting additional demonstrations, we
+        augment the training set with synthetically rendered viewpoints of each replay episode using
+        <a href="https://arxiv.org/abs/2410.24207" target="_blank" rel="noopener">NoPoSplat</a>, a feed-forward 3D
+        Gaussian Splatting model that reconstructs a scene from a pair of unposed images in a single forward pass.
+        This is valid because the recovered action labels are defined in the robot&rsquo;s base/task frame, not in
+        any camera&rsquo;s frame &mdash; so real images and novel-view renders at a given timestep share an
+        identical action label, at no additional data-collection cost. Rendering happens once, offline; at
+        deployment the policy receives only the live feed from a single camera.
+      </p>
+      <div class="fig">
+        <video controls loop muted autoplay playsinline preload="metadata" poster="web/novel-views-poster.jpg">
+          <source src="web/novel-views.mp4" type="video/mp4">
+        </video>
+        <div class="caption">Fig. 4 &mdash; Novel views of a replay episode rendered by NoPoSplat from the two fixed-camera images, used to augment training with viewpoints beyond the two physical cameras.</div>
+      </div>
+      <p>
+        We compared several feed-forward reconstruction methods before settling on this approach. MASt3R paired
+        with Gaussian Splatting produced blurry, poorly localized reconstructions from only two input views, and
+        vanilla Splatt3r left large holes in the point cloud where the two camera views didn&rsquo;t overlap; adding
+        gsplat rendering on top of Splatt3r filled in geometry but left visible artifacts near those seams. NoPoSplat
+        gave the cleanest reconstruction of the four, and cropping its output to the largest hole-free rectangle
+        before rescaling to native resolution &mdash; the version used in our final pipeline &mdash; removed the
+        remaining border artifacts entirely.
+      </p>
+      <div class="fig">
+        <img src="web/novel-views-comparison.png" alt="Comparison of feed-forward reconstruction methods: MASt3R + Gaussian Splatting, Splatt3r, Splatt3r + gsplat, NoPoSplat, and NoPoSplat + letterbox + cropping">
+        <div class="caption">Fig. 5 &mdash; Novel-view reconstruction quality across methods on the same input views. NoPoSplat with letterbox removal and cropping (bottom) is used in our final pipeline.</div>
+      </div>
+
+      <h3 id="network">Policy Architecture</h3>
+      <p>
+        We adopt a diffusion-based visuomotor policy, extended to accommodate the wrench modality in both the
+        observation and action space. At each observation step, the camera image passes through a shared,
+        ImageNet-pretrained ResNet-18 encoder; the resulting visual feature is concatenated with proprioceptive pose
+        and sensed wrench and passed through an MLP to form a per-step observation embedding. The current diffusion
+        timestep is separately encoded and combined with the observation embedding to form a conditioning signal,
+        broadcast to every stage of a Conditional U-Net 1D denoising network via FiLM. The network predicts noise
+        at each of <i>K</i> denoising steps and is applied iteratively, ultimately yielding the denoised reference
+        pose and wrench chunk.
+      </p>
+      <div class="fig">
+        <img src="web/network_architecture.png" alt="Policy network architecture: ResNet-18 observation encoding, FiLM conditioning signal, and a Conditional U-Net 1D denoising network">
+        <div class="caption">Fig. 6 &mdash; Policy architecture. A ResNet-18 image encoder is fused with proprioceptive pose and sensed wrench into an observation embedding, which FiLM-conditions a Conditional U-Net 1D that denoises the reference pose/wrench action chunk.</div>
+      </div>
+
+      <h3 id="deployment">Training &amp; Deployment</h3>
+      <p>
+        The policy is trained with the standard denoising-diffusion objective for visuomotor policies: a
+        ground-truth action chunk is corrupted with Gaussian noise at a sampled diffusion step, and the network is
+        optimized to predict that noise given the noisy action, the diffusion step, and the current observation. We
+        use an observation horizon T<sub>o</sub>&nbsp;=&nbsp;2 and an action horizon T<sub>a</sub>&nbsp;=&nbsp;16.
+      </p>
+      <p>
+        At deployment, the policy runs closed loop: at each control step it denoises a reference pose/wrench chunk
+        from Gaussian noise conditioned on the live observation. The robot also reads its current joint torques and
+        recovers the <em>live</em> external wrench with the same dynamics-based subtraction used during replay.
+        The predicted reference pose and wrench, together with this live sensed wrench, are supplied to the
+        admittance controller, whose corrected pose is what is actually sent to the robot&rsquo;s low-level
+        position controller &mdash; so the predicted wrench acts as a continuously updated, learned setpoint rather
+        than a fixed hand-tuned constant.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="results">
+    <div class="col">
+      <h2>Results</h2>
+      <p>
+        We evaluate success rate over 40 trials per condition; a trial succeeds if the robot scoops pasta from the
+        box and transfers it into the bowl without spilling. All conditions train on 30 demonstration episodes
+        (&asymp;10&nbsp;s each, &asymp;300&nbsp;s / 5&nbsp;minutes total demonstration data).
+      </p>
+
+      <h3 id="ablation">Ablation Study</h3>
+      <p>Task success rate across data-collection method, use of force, and policy architecture, all under otherwise identical conditions.</p>
+      <table>
+        <thead>
+          <tr><th>Data Collection</th><th>Pose</th><th>Wrench</th><th>Diffusion</th><th>ACT</th><th>Flow Matching</th><th>Success Rate</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Joystick teleoperation</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>0%</td></tr>
+          <tr><td>Human demo + replay</td><td>&#10003;</td><td>&times;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>82.5%</td></tr>
+          <tr><td>Human demo + replay</td><td>&#10003;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>&#10003;</td><td>92.5%</td></tr>
+          <tr><td>Human demo + replay</td><td>&#10003;</td><td>&#10003;</td><td>&times;</td><td>&#10003;</td><td>&times;</td><td>92.5%</td></tr>
+          <tr><td><b>Human demo + replay (ours)</b></td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td class="win">97.5%</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Three patterns emerge. <b>Replay matters:</b> swapping human demonstration + replay for direct joystick
+        teleoperation (recording pose and force live, no replay stage) collapses success to zero &mdash; the
+        benefit comes from naturalistic human demonstration combined with replay-based recovery, not from access to
+        live force alone. <b>Force matters:</b> pose-only deployment (no wrench prediction) drops success to
+        82.5%, confirming force contributes beyond pose alone. <b>The formulation generalizes:</b> the same
+        recovered pose-and-wrench data trains ACT and flow-matching policies to comparable success (92.5% each),
+        with diffusion slightly ahead at 97.5%.
+      </p>
+
+      <h3 id="baseline">Comparison with Tool-as-Interface</h3>
+      <table>
+        <thead><tr><th>Method</th><th>Success rate</th></tr></thead>
+        <tbody>
+          <tr><td>Tool-as-Interface (pose-only, masked)</td><td>80%</td></tr>
+          <tr><td><b>Ours</b></td><td class="win">97.5%</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Reimplementing the Tool-as-Interface baseline &mdash; trained directly on human demonstration images with
+        segmentation-based masking of the human hand (training) and robot arm (deployment) &mdash; our method
+        outperforms it by a wide margin. Beyond the benefit of force, we attribute part of this gap to the masking
+        strategy itself: segmentation-based masking is not reliably accurate across all environments, and
+        inaccurate masks at deployment can degrade policy performance. Because our training images come directly
+        from robot replay rather than the human demonstration, our method needs no masking of any kind, at either
+        training or deployment.
+      </p>
+    </div>
+  </section>
+
+  <section id="limitations">
+    <div class="col">
+      <h2>Limitations</h2>
+      <p>
+        The accuracy of the recovered force is fundamentally bounded by the accuracy of the underlying tool pose
+        tracking: since the entire force-recovery pipeline is driven by replaying a tracked trajectory and
+        attributing the resulting torque residual to external contact, any tracking error propagates directly into
+        the recovered wrench. This makes the approach well suited to tasks where approximate, task-appropriate
+        contact force is sufficient to improve behavior &mdash; as in the scooping task studied here &mdash; but
+        less suited to applications demanding high-precision force tracking, such as delicate assembly, where
+        today&rsquo;s vision-based pose-tracking accuracy would translate into unacceptably large force errors.
+        Improving the precision of this pipeline for such applications is left to future work.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="conclusion">
+    <div class="col">
+      <h2>Conclusion</h2>
+      <p>
+        We presented a method for incorporating contact force into imitation learning without instrumenting the
+        human demonstrator with any dedicated force/torque sensor. By tracking a tool during an uninstrumented
+        human demonstration and replaying the resulting trajectory on the robot under position control, we recover
+        a reference wrench directly from onboard joint torque sensing, using the robot&rsquo;s own dynamics model to
+        isolate external contact force. This recovered wrench, together with the demonstrated pose, supervises a
+        visuomotor policy that jointly predicts a reference pose and wrench at deployment, supplied as a
+        time-varying setpoint to an admittance controller. On a pasta scooping-and-transfer task, this approach
+        achieves a higher success rate than pose-only and baseline alternatives, and remains effective across
+        diffusion, transformer-based (ACT), and flow-matching policy architectures alike &mdash; all from just five
+        minutes of human demonstration in total.
+      </p>
+    </div>
+  </section>
+
+  <section id="citation">
+    <div class="col">
+      <h2>Citation</h2>
+      <p style="text-align:center;">The paper is currently under review at ICRA 2027. If you&rsquo;d like to reference it in the meantime:</p>
+      <pre><code>@misc{chowdhury2026forceconditioned,
+  title  = {Force-Conditioned Imitation Learning from Vision-Only Human
+            Demonstrations via Robot Replay},
+  author = {Chowdhury, Sakib and Huang, Raymond and Chen, Vanessa and Guo, Yi},
+  note   = {Submitted to ICRA 2027},
+  year   = {2026}
+}</code></pre>
+    </div>
+  </section>
+
+  <footer>
+    <a href="../../index.html#research">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>

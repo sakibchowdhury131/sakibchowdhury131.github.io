@@ -1,0 +1,23 @@
+.DS_Store
+**/.DS_Store
+
+# Raw/source assets for force-conditioned-imitation-learning: only the
+# compressed copies in web/ are used by the page. Keep the originals
+# locally, out of git history.
+projects/force-conditioned-imitation-learning/*.MOV
+projects/force-conditioned-imitation-learning/*.mp4
+projects/force-conditioned-imitation-learning/*.png
+
+# Raw/source assets for FlashPlan: only the compressed copies in web/
+# are used by the page. Keep the originals locally, out of git history.
+projects/FlashPlan/*.mp4
+projects/FlashPlan/figures/
+
+# Raw/source assets for learning-to-strike: only the compressed copies
+# in web/ are used by the page. Keep the originals locally, out of git history.
+projects/learning-to-strike/*.mp4
+projects/learning-to-strike/Figures/
+
+# Raw/source assets for synthNID: only the compressed copies in web/
+# are used by the page. Keep the original talk recording locally.
+projects/synthNID/*.mp4

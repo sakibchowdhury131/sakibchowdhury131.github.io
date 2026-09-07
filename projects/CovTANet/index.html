@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CovTANet — Tri-Level Attention Network for COVID-19 CT Analysis</title>
+  <meta name="description" content="CovTANet: A Hybrid Tri-Level Attention-Based Network for Lesion Segmentation, Diagnosis, and Severity Prediction of COVID-19 Chest CT Scans. Tanvir Mahmud, Md. Jahin Alam, Sakib Chowdhury, Shams Nafisa Ali, Md. Maisoon Rahman, Shaikh Anowarul Fattah, Mohammad Saquib. IEEE Transactions on Industrial Informatics, 2021.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#1a56db;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 860px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 16.5px; margin: 0 auto 6px; max-width: 800px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .abstract p{ text-align:center; max-width: 820px; margin: 0 auto; color:#333; }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img{ max-width:100%; max-height: 560px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 800px; margin-left:auto; margin-right:auto; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 12.5px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 6px 8px; text-align: center; }
+    th{ background:#fff; font-weight:700; }
+    td:first-child, th:first-child{ text-align:left; }
+    .win{ color: var(--ok); font-weight: 700; }
+    .table-wrap{ overflow-x:auto; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+    pre{ background:#1a1a1a; color:#e5e7eb; padding:18px 20px; border-radius:10px; overflow-x:auto; font-size: 13px; line-height:1.65; max-width: 800px; margin: 16px auto 0; }
+    pre code{ background:none; border:none; padding:0; color:inherit; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#publications">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>CovTANet: A Hybrid Tri-Level Attention-Based Network for Lesion Segmentation, Diagnosis, and Severity Prediction of COVID-19 Chest CT Scans</h1>
+    <div class="authors">
+      Tanvir Mahmud &nbsp;&middot;&nbsp;
+      Md. Jahin Alam &nbsp;&middot;&nbsp;
+      Sakib Chowdhury &nbsp;&middot;&nbsp;
+      Shams Nafisa Ali &nbsp;&middot;&nbsp;
+      Md. Maisoon Rahman &nbsp;&middot;&nbsp;
+      Shaikh Anowarul Fattah &nbsp;&middot;&nbsp;
+      Mohammad Saquib
+    </div>
+    <div class="affiliation">Bangladesh University of Engineering and Technology (BUET) &amp; The University of Texas at Dallas</div>
+    <div class="venue-badge">IEEE Transactions on Industrial Informatics, Vol. 17, No. 9 &middot; 2021</div>
+    <div class="btn-row">
+      <a class="btn" href="CovTANet_A_Hybrid_Tri-Level_Attention-Based_Network_for_Lesion_Segmentation_Diagnosis_and_Severity_Prediction_of_COVID-19_Chest_CT_Scans.pdf">Paper (PDF)</a>
+      <a class="btn" href="https://doi.org/10.1109/TII.2020.3048391" target="_blank" rel="noopener">DOI</a>
+      <a class="btn secondary" href="#citation">BibTeX</a>
+    </div>
+  </header>
+
+  <section id="abstract" class="band abstract">
+    <div class="col">
+      <h2>Abstract</h2>
+      <p>
+        Rapid and precise diagnosis of COVID-19 is one of the major challenges faced by the global community to
+        control the spread of this overgrowing pandemic. In this article, a hybrid neural network is proposed,
+        named CovTANet, to provide an end-to-end clinical diagnostic tool for early diagnosis, lesion segmentation,
+        and severity prediction of COVID-19 utilizing chest computer tomography (CT) scans. A multiphase
+        optimization strategy is introduced for solving the challenges of complicated diagnosis at a very early
+        stage of infection, where an efficient lesion segmentation network is optimized initially, which is later
+        integrated into a joint optimization framework for the diagnosis and severity prediction tasks providing
+        feature enhancement of the infected regions. Moreover, for overcoming the challenges with diffused,
+        blurred, and varying shaped edges of COVID lesions with novel and diverse characteristics, a novel
+        segmentation network is introduced, namely tri-level attention-based segmentation network. This network
+        has significantly reduced semantic gaps in subsequent encoding&ndash;decoding stages, with immense
+        parallelization of multiscale features for faster convergence providing considerable performance
+        improvement over traditional networks. Furthermore, a novel tri-level attention mechanism has been
+        introduced, which is repeatedly utilized over the network, combining channel, spatial, and pixel attention
+        schemes for faster and efficient generalization of contextual information embedded in the feature map
+        through feature recalibration and enhancement operations. Outstanding performances have been achieved in
+        all three tasks through extensive experimentation on a large publicly available dataset containing 1110
+        chest CT-volumes, which signifies the effectiveness of the proposed scheme at the current stage of the
+        pandemic.
+      </p>
+    </div>
+  </section>
+
+  <section id="highlights">
+    <div class="col">
+      <h2>Highlights</h2>
+      <ul>
+        <li>A single end-to-end network jointly handling all three clinically-relevant tasks: <b>lesion
+          segmentation</b>, <b>diagnosis</b> (normal vs. COVID), and <b>severity prediction</b> (mild vs. severe)
+          from chest CT volumes.</li>
+        <li>A novel <b>tri-level attention unit (TAU)</b> combining channel, spatial, and pixel attention, applied
+          repeatedly through both the segmentation network and the joint diagnosis/severity classifiers.</li>
+        <li>A <b>two-phase optimization</b> scheme: a tri-level attention segmentation network (TA-SegNet) is
+          trained first, then frozen and integrated into a joint framework that uses its lesion features to guide
+          diagnosis and severity prediction &mdash; letting the classifiers focus on infected regions instead of
+          the whole CT volume.</li>
+        <li>TA-SegNet reaches <b>62.3% Dice</b> on MosMedData (11.8% over U-Net, 26.7% over FCN) and <b>90.2% Dice</b>
+          on a secondary dataset; the full CovTANet reaches <b>85.2%</b> diagnostic accuracy even on mild-symptom
+          cases (95.8% for severe cases) and <b>91.7%</b> accuracy distinguishing mild vs. severe severity.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="method">
+    <div class="col">
+      <h2>Method</h2>
+      <p>
+        COVID-19 lesions in chest CT are small, diffused, and irregularly shaped, easily confused with the thorax&rsquo;s
+        arteries and veins &mdash; making both segmentation and, downstream, diagnosis and severity assessment
+        difficult, especially early in infection when lesions are smallest. CovTANet addresses this by first
+        learning to segment lesions precisely, then explicitly feeding those learned lesion features &mdash; not
+        just the raw CT volume &mdash; into the diagnosis and severity classifiers.
+      </p>
+      <div class="fig">
+        <img src="web/fig1.png" alt="CovTANet overview: TA-SegNet extracts per-slice segmentation masks and feature vectors from the CT volume, which feed a joint classifier unit with tri-level attention units producing diagnostic and severity predictions">
+        <div class="caption">Fig. 1 &mdash; Overview. TA-SegNet extracts a slicewise lesion mask and a per-slice feature vector from the CT volume. These features pass through a Regional Feature Extractor and multiple Tri-level Attention Units (TAUs) before being aggregated and fused into separate diagnostic and severity predictions.</div>
+      </div>
+      <h3>Tri-Level Attention Unit (TAU)</h3>
+      <p>
+        Each TAU combines three complementary attention mechanisms: <b>channel attention</b> recalibrates which
+        feature channels matter most globally, <b>spatial attention</b> highlights which broad image regions are
+        relevant, and <b>pixel attention</b> further sharpens focus onto the fine-grained pixels most likely to
+        belong to a lesion. Chaining all three lets the network progressively narrow its focus from
+        &ldquo;which features&rdquo; to &ldquo;which regions&rdquo; to &ldquo;which exact pixels&rdquo; matter for
+        the diffused, irregularly-shaped COVID lesions that a single attention mechanism alone tends to miss.
+      </p>
+      <h3>TA-SegNet: Tri-Level Attention Segmentation Network</h3>
+      <p>
+        Built on a U-Net-style encoder&ndash;decoder backbone, TA-SegNet places TAUs at both the encoder and
+        decoder stages: encoder TAUs reduce the semantic gap between encoder and decoder feature maps at matching
+        scales, while decoder TAUs refine the reconstructed features with finer spatial detail. A deep fusion
+        scheme combines multiscale features from every encoder&ndash;decoder level (rather than relying only on
+        the final decoder output), and an EfficientNet backbone can optionally be used for transfer learning.
+      </p>
+      <h3>Joint Diagnosis &amp; Severity Prediction</h3>
+      <p>
+        Rather than training separate networks per slice, a Regional Feature Extractor (RFEx) processes each
+        slice&rsquo;s TA-SegNet features, and per-slice TAU-attended features are aggregated across the whole
+        CT volume into two parallel branches &mdash; one fused for diagnosis, one for severity &mdash; each ending
+        in its own fully-connected classifier. Training happens in two phases: TA-SegNet is optimized first
+        (using a focal Tversky loss suited to the extreme foreground/background imbalance of small lesions), then
+        the full network is jointly optimized for diagnosis and severity using a combined objective &mdash; severity
+        loss is only applied to volumes actually diagnosed positive, since severity is undefined for normal cases.
+      </p>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="col">
+      <h2>Results</h2>
+      <p>
+        Evaluated on MosMedData (1110 CT volumes from Moscow hospitals; 50 volumes with pixel-level lesion
+        annotations; volumes further labeled normal/mild/severe) with 5-fold cross-validation, plus a secondary
+        20-volume public segmentation dataset for additional validation.
+      </p>
+
+      <h3>Segmentation Ablation Study</h3>
+      <p>Starting from a plain U-Net baseline (V1), each proposed component is added incrementally:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Version</th><th>EfficientNet Backbone</th><th>Encoder TAU</th><th>Decoder TAU</th><th>Encoder in Fusion</th><th>Decoder in Fusion</th><th>Dice (%)</th></tr></thead>
+          <tbody>
+            <tr><td>V1 (baseline U-Net)</td><td>&times;</td><td>&times;</td><td>&times;</td><td>&times;</td><td>&times;</td><td>50.5&plusmn;0.26</td></tr>
+            <tr><td>V2</td><td>&times;</td><td>&times;</td><td>&times;</td><td>&times;</td><td>&#10003;</td><td>52.4&plusmn;0.17</td></tr>
+            <tr><td>V3</td><td>&times;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>&times;</td><td>54.9&plusmn;0.14</td></tr>
+            <tr><td>V4</td><td>&times;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>&times;</td><td>54.6&plusmn;0.14</td></tr>
+            <tr><td>V5</td><td>&times;</td><td>&times;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>53.4&plusmn;0.19</td></tr>
+            <tr><td>V6</td><td>&times;</td><td>&#10003;</td><td>&#10003;</td><td>&times;</td><td>&times;</td><td>57.1&plusmn;0.33</td></tr>
+            <tr><td>V7</td><td>&times;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>60.2&plusmn;0.26</td></tr>
+            <tr><td><b>V8 (TA-SegNet, full)</b></td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td>&#10003;</td><td class="win">62.3&plusmn;0.18</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Encoder and decoder TAUs each help individually (+4.1% and +2.9% Dice respectively) and more together
+        (+6.6%); fusing multiscale encoder&ndash;decoder features adds another +4.4%, combining with two-stage TAUs
+        for +9.7%; and an EfficientNet backbone adds a further +2.1% &mdash; each component contributing
+        independently to the final result.
+      </p>
+
+      <h3>Segmentation vs. Other Networks</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Network (MosMedData)</th><th>Sensitivity (%)</th><th>Precision (%)</th><th>Dice (%)</th><th>IoU (%)</th></tr></thead>
+          <tbody>
+            <tr><td>FCN</td><td>78.8&plusmn;0.23</td><td>58.9&plusmn;0.16</td><td>35.6&plusmn;0.36</td><td>29.3&plusmn;0.45</td></tr>
+            <tr><td>U-Net</td><td>94.3&plusmn;0.34</td><td>74.4&plusmn;0.32</td><td>50.5&plusmn;0.26</td><td>40.3&plusmn;0.23</td></tr>
+            <tr><td>VNet</td><td>84.5&plusmn;0.42</td><td>64.6&plusmn;0.54</td><td>40.2&plusmn;0.33</td><td>36.4&plusmn;0.26</td></tr>
+            <tr><td>U-Net++</td><td>78.1&plusmn;0.15</td><td>65.1&plusmn;0.25</td><td>37.2&plusmn;0.27</td><td>33.3&plusmn;0.32</td></tr>
+            <tr><td>CPF-Net</td><td>82.4&plusmn;0.25</td><td>71.3&plusmn;0.29</td><td>48.9&plusmn;0.21</td><td>37.6&plusmn;0.38</td></tr>
+            <tr><td>COPLE-Net</td><td>85.5&plusmn;0.18</td><td>73.1&plusmn;0.20</td><td>51.1&plusmn;0.21</td><td>41.2&plusmn;0.38</td></tr>
+            <tr><td>Mini-SegNet</td><td>81.5&plusmn;0.25</td><td>69.1&plusmn;0.19</td><td>43.7&plusmn;0.23</td><td>35.2&plusmn;0.38</td></tr>
+            <tr><td>Inf-Net</td><td>92.8&plusmn;0.27</td><td>76.9&plusmn;0.34</td><td>51.8&plusmn;0.31</td><td>41.6&plusmn;0.27</td></tr>
+            <tr><td><b>TA-SegNet (ours)</b></td><td class="win">99.6&plusmn;0.09</td><td class="win">84.8&plusmn;0.26</td><td class="win">62.3&plusmn;0.18</td><td class="win">51.7&plusmn;0.29</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        TA-SegNet's 99.6% sensitivity means it very rarely misses a lesion outright, while also holding the highest
+        precision of any method tested &mdash; most competing networks trade one for the other, producing either
+        excess false positives or missed lesions.
+      </p>
+
+      <h3>Qualitative Segmentation</h3>
+      <div class="fig">
+        <img src="web/fig8.png" alt="Grid of CT slices with segmentation overlays from FCN, UNet++, UNet, Inf-Net, and the proposed method on MosMedData, and UNet, MultiResUNet, Inf-Net, and the proposed method on a second dataset. Green marks correctly segmented lesion, blue false positives, red false negatives">
+        <div class="caption">Fig. 8 &mdash; Qualitative segmentation comparison. Green = true positive, blue = false positive, red = false negative. TA-SegNet ("PROPOSED") shows visibly fewer false positives/negatives than FCN, U-Net++, U-Net, Inf-Net, and MultiResUNet across both datasets.</div>
+      </div>
+
+      <h3>Segmentation on a Secondary Dataset</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Network (Dataset-2)</th><th>Sensitivity (%)</th><th>Specificity (%)</th><th>Dice (%)</th><th>IoU (%)</th></tr></thead>
+          <tbody>
+            <tr><td>U-Net</td><td>75.9&plusmn;0.34</td><td>88.9&plusmn;0.12</td><td>79.3&plusmn;0.26</td><td>74.9&plusmn;0.18</td></tr>
+            <tr><td>MultiResUNet</td><td>77.2&plusmn;0.33</td><td>90.3&plusmn;0.24</td><td>82.7&plusmn;0.28</td><td>77.4&plusmn;0.15</td></tr>
+            <tr><td>Attention-UNet</td><td>81.1&plusmn;0.29</td><td>92.2&plusmn;0.11</td><td>85.1&plusmn;0.14</td><td>79.6&plusmn;0.25</td></tr>
+            <tr><td>CPF-Net</td><td>78.9&plusmn;0.27</td><td>91.7&plusmn;0.14</td><td>84.4&plusmn;0.25</td><td>79.3&plusmn;0.25</td></tr>
+            <tr><td>Gated-UNet</td><td>81.4&plusmn;0.24</td><td>92.5&plusmn;0.19</td><td>85.6&plusmn;0.19</td><td>80.2&plusmn;0.16</td></tr>
+            <tr><td>Inf-Net</td><td>82.7&plusmn;0.26</td><td>94.8&plusmn;0.21</td><td>86.9&plusmn;0.34</td><td>81.1&plusmn;0.18</td></tr>
+            <tr><td><b>TA-SegNet (ours)</b></td><td class="win">88.5&plusmn;0.22</td><td class="win">98.9&plusmn;0.14</td><td class="win">90.2&plusmn;0.17</td><td class="win">86.4&plusmn;0.19</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Joint Diagnosis &amp; Severity Prediction</h3>
+      <p>
+        Diagnosis is reported separately for mild and severe cases to highlight early-diagnosis performance, since
+        distinguishing mild COVID from normal CT is the harder and more clinically valuable case:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th rowspan="2">Network</th><th colspan="4">Diagnosis: Normal vs. Mild</th><th colspan="4">Diagnosis: Normal vs. Severe</th><th colspan="4">Severity: Mild vs. Severe</th></tr>
+            <tr><th>Sen.</th><th>Spec.</th><th>Acc.</th><th>F1</th><th>Sen.</th><th>Spec.</th><th>Acc.</th><th>F1</th><th>Sen.</th><th>Spec.</th><th>Acc.</th><th>F1</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>VGG-19</td><td>54.4</td><td>63.4</td><td>58.4</td><td>58.6</td><td>63.4</td><td>70.8</td><td>65.9</td><td>66.9</td><td>62.7</td><td>65.5</td><td>61.9</td><td>64.1</td></tr>
+            <tr><td>ResNet-50</td><td>61.1</td><td>65.7</td><td>62.5</td><td>63.3</td><td>66.5</td><td>69.3</td><td>69.1</td><td>67.8</td><td>61.1</td><td>63.8</td><td>64.8</td><td>62.4</td></tr>
+            <tr><td>Xception</td><td>56.8</td><td>57.9</td><td>59.9</td><td>57.3</td><td>64.8</td><td>67.2</td><td>66.7</td><td>65.9</td><td>62.9</td><td>65.1</td><td>63.1</td><td>63.9</td></tr>
+            <tr><td>DenseNet121</td><td>59.7</td><td>64.6</td><td>61.1</td><td>62.1</td><td>65.1</td><td>70.1</td><td>67.8</td><td>67.5</td><td>60.2</td><td>64.4</td><td>60.6</td><td>62.2</td></tr>
+            <tr><td>InceptionV3</td><td>60.4</td><td>62.1</td><td>59.3</td><td>61.2</td><td>66.6</td><td>69.8</td><td>66.2</td><td>68.2</td><td>62.8</td><td>67.9</td><td>61.4</td><td>65.3</td></tr>
+            <tr><td><b>CovTANet (ours)</b></td><td class="win">83.8</td><td class="win">90.3</td><td class="win">85.2</td><td class="win">86.9</td><td class="win">93.9</td><td class="win">96.6</td><td class="win">95.8</td><td class="win">94.2</td><td class="win">90.9</td><td class="win">93.4</td><td class="win">91.7</td><td class="win">92.1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="caption">All values are percentages (%); &plusmn; standard deviation omitted here for space &mdash; see Table IV of the paper.</div>
+      <p>
+        Every baseline here operates directly on raw CT slices; CovTANet's advantage &mdash; roughly
+        20&ndash;25 points of accuracy over the best baseline in every column &mdash; comes specifically from
+        feeding in TA-SegNet's lesion-focused features instead, letting the classifier ignore the large fraction of
+        each CT volume that is healthy tissue and irrelevant to the diagnosis.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="conclusion">
+    <div class="col">
+      <h2>Conclusion</h2>
+      <p>
+        CovTANet shows that segmentation, diagnosis, and severity prediction for COVID-19 chest CT are best
+        addressed together rather than separately: optimizing an attention-based segmentation network first, then
+        explicitly routing its lesion-focused features into the diagnosis and severity classifiers, substantially
+        outperforms networks that classify raw CT volumes directly &mdash; particularly on the clinically important
+        case of early, mild-symptom diagnosis. The tri-level (channel, spatial, pixel) attention mechanism proved
+        broadly useful throughout the network, and the resulting framework is proposed as a candidate tool for
+        faster automated mass-screening, with further validation across geographically diverse patient populations
+        suggested as future work.
+      </p>
+    </div>
+  </section>
+
+  <section id="citation">
+    <div class="col">
+      <h2>Citation</h2>
+      <pre><code>@article{mahmud2021covtanet,
+  title   = {{CovTANet}: A Hybrid Tri-Level Attention-Based Network
+             for Lesion Segmentation, Diagnosis, and Severity
+             Prediction of {COVID-19} Chest {CT} Scans},
+  author  = {Mahmud, Tanvir and Alam, Md. Jahin and Chowdhury, Sakib
+             and Ali, Shams Nafisa and Rahman, Md. Maisoon and
+             Fattah, Shaikh Anowarul and Saquib, Mohammad},
+  journal = {IEEE Transactions on Industrial Informatics},
+  volume  = {17},
+  number  = {9},
+  pages   = {6489--6498},
+  year    = {2021},
+  doi     = {10.1109/TII.2020.3048391}
+}</code></pre>
+    </div>
+  </section>
+
+  <footer>
+    <a href="../../index.html#publications">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>

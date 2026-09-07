@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Learning to Strike for Robotic Table Tennis</title>
+  <meta name="description" content="Learning to Strike for Robotic Table Tennis. Sakib Chowdhury, Yi Guo, Stevens Institute of Technology.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#1a56db;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    /* Hero */
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 820px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 17px; margin: 0 auto 6px; max-width: 760px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    /* Teaser */
+    .teaser{ padding: 28px 24px 0; text-align:center; }
+    .teaser video{ width:100%; max-width: 760px; height:auto; display:block; margin: 0 auto; border-radius: 10px; background:#000; }
+    .teaser figcaption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; }
+
+    /* Bands / sections */
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .abstract p{ text-align:center; max-width: 800px; margin: 0 auto; color:#333; }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img{ max-width:70%; max-height: 392px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .fig-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items:start; margin: 20px 0; }
+    .fig-row img{ max-width:100%; max-height: 480px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 760px; margin-left:auto; margin-right:auto; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 13.5px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 7px 9px; text-align: center; }
+    th{ background:#fff; font-weight:700; }
+    td:first-child, th:first-child{ text-align:left; }
+    .win{ color: var(--ok); font-weight: 700; }
+    .table-wrap{ overflow-x:auto; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+    pre{ background:#1a1a1a; color:#e5e7eb; padding:18px 20px; border-radius:10px; overflow-x:auto; font-size: 13px; line-height:1.65; max-width: 760px; margin: 16px auto 0; }
+    pre code{ background:none; border:none; padding:0; color:inherit; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+
+    @media (max-width: 620px){
+      .fig-row{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#research">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>Learning to Strike for Robotic Table Tennis</h1>
+    <div class="authors">
+      Sakib Chowdhury &nbsp;&middot;&nbsp;
+      <a href="https://personal.stevens.edu/~yguo1/" target="_blank" rel="noopener">Yi Guo</a>
+    </div>
+    <div class="affiliation">Department of Electrical and Computer Engineering, Stevens Institute of Technology</div>
+    <div class="btn-row">
+      <a class="btn" href="Learning_to_strike.pdf">Paper (PDF)</a>
+      <a class="btn secondary" href="#citation">BibTeX</a>
+    </div>
+  </header>
+
+  <div class="teaser">
+    <figure>
+      <video controls loop muted autoplay playsinline preload="metadata" poster="web/learning-to-strike-poster.jpg">
+        <source src="web/learning-to-strike-demo.mp4" type="video/mp4">
+      </video>
+      <figcaption>Simulated table-tennis strikes and ball interception, played back at 1&times; speed in PyBullet.</figcaption>
+    </figure>
+  </div>
+
+  <section id="abstract" class="band abstract">
+    <div class="col">
+      <h2>Abstract</h2>
+      <p>
+        Motivated by recent advances in robotic systems&rsquo; ability to interact with dynamic environments, we
+        study autonomous robotic table tennis in this paper. We design a high speed robotic arm to play table
+        tennis, and develop a software system that predicts the incoming ball&rsquo;s trajectory and learns to
+        control the robot arm for striking the ball to the opponent side of the table. Utilizing the idea of
+        residual physics, we develop a residual predictor to predict a striking position for the incoming ball
+        using sparse observation of the ball&rsquo;s starting trajectory. We control the arm to the contact-ready
+        position, and then use a neural network to output the striking velocity to hit the ball. The neural network
+        is trained through experience using a regression-based learning method. Simulation results in a robotic
+        simulator demonstrate the superior performance, benefiting from efficient learning.
+      </p>
+    </div>
+  </section>
+
+  <section id="highlights">
+    <div class="col">
+      <h2>Highlights</h2>
+      <ul>
+        <li>A residual learning scheme that predicts the incoming ball&rsquo;s landing/striking position from just <b>two position samples</b> of its early trajectory &mdash; correcting a physics-based estimate for real-world effects (restitution, friction, air resistance) rather than modeling them explicitly.</li>
+        <li>A random forest regressor that learns the striking velocity needed to return the ball to a target landing position, trained from experience rather than hand-tuned control.</li>
+        <li>A custom-built 6-DOF high-speed robotic arm, since most commercial arms are too speed-limited for table tennis.</li>
+        <li><b>98.5%</b> interception success (985/1000 simulated throws) with the residual predictor, versus consistent failure using physics-only trajectory prediction alone.</li>
+        <li>Both learned components run in a few milliseconds &mdash; under 16&nbsp;ms combined &mdash; leaving ample time for motion planning and control.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="system">
+    <div class="col">
+      <h2>The System &amp; Problem</h2>
+      <p>
+        Commercial robotic arms are designed for safe, limited-speed operation, making most of them unsuitable for
+        table tennis. We therefore design a custom 6-DOF arm: joints J<sub>1</sub>&ndash;J<sub>4</sub> use Xiaomi
+        Cybergear motors (continuous rotation, up to 296&nbsp;rpm, 12&nbsp;N&middot;m peak torque), while
+        J<sub>5</sub> and J<sub>6</sub> use RDS5160 servos (0&ndash;270&deg;, up to 461&deg;/s, 6.87&nbsp;N&middot;m
+        peak torque) placed along the paddle&rsquo;s roll, pitch, and yaw axes for precise orientation control.
+      </p>
+      <div class="fig">
+        <img src="web/real_robot_5.png" alt="Design of the custom 6-DOF robotic arm, showing the Xiaomi Cybergear motors, RDS5160 servo motors, and paddle end-effector">
+        <div class="caption">Fig. 1 &mdash; The custom high-speed 6-DOF arm. J<sub>1</sub>&ndash;J<sub>4</sub> use Xiaomi Cybergear motors; J<sub>5</sub>&ndash;J<sub>6</sub> use RDS5160 servos and are aligned with the paddle&rsquo;s roll/pitch/yaw for precise orientation.</div>
+      </div>
+      <p>
+        Given the first two camera-observed positions of a thrown ball, p<sub>0</sub> and p<sub>1</sub>, the goal is
+        to compute joint angular velocities that strike the ball so it lands at a desired location p<sub>L</sub> on
+        the opponent&rsquo;s side &mdash; with the striking point p<sub>s</sub> constrained to a fixed plane in
+        front of the robot, and a pre-strike paddle orientation &theta;<sub>d</sub>.
+      </p>
+      <div class="fig">
+        <img src="web/experimental-setup-9.png" alt="Setup diagram: a camera observes the ball's early trajectory, the robot arm strikes it toward target zones on the opponent's side of the table">
+        <div class="caption">Fig. 2 &mdash; The table tennis setup. A camera observes the ball&rsquo;s first two positions p<sub>0</sub>, p<sub>1</sub>; the robot strikes the ball toward a target landing position p<sub>L</sub> in the opponent&rsquo;s target zones.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="method">
+    <div class="col">
+      <h2>Method</h2>
+      <p>
+        The system has three modules: a <b>Striking Point Estimation</b> module predicts where to intercept the
+        ball, a <b>Contact Ready</b> module moves the paddle there, and a <b>Ball Strike</b> module predicts the
+        joint velocities needed to hit it toward the desired landing spot.
+      </p>
+      <div class="fig">
+        <img src="web/complete_system_6.png" alt="System architecture: striking point estimation module, contact ready module, and ball strike module, with physics-based and neural-network submodules">
+        <div class="caption">Fig. 3 &mdash; System architecture. The physics-based ideal trajectory (purple) is corrected by a learned residual (green) to estimate the striking point p<sub>s</sub>, which feeds a motion planner (orange) and a learned striking-velocity planner (pink).</div>
+      </div>
+
+      <h3>Striking Point Estimation: Residual Learning</h3>
+      <p>
+        From p<sub>0</sub> and p<sub>1</sub>, an initial velocity v<sub>0</sub> gives an <em>ideal</em>
+        projectile-motion trajectory P<sub>t</sub>. But real trajectories deviate from this ideal due to the
+        table&rsquo;s coefficient of restitution, friction, and air resistance &mdash; effects that are hard to
+        model explicitly. Rather than modeling them, we learn the deviation &delta; directly: a shallow feedforward
+        network (two linear layers, ReLU then TanH) takes p<sub>0</sub>, v<sub>0</sub>, the distance to the robot,
+        and the ideal striking point p<sub>k</sub>, and predicts &delta;, so the actual striking point is
+        p<sub>s</sub>&nbsp;=&nbsp;P<sub>t</sub>&nbsp;+&nbsp;&delta;. The shallow architecture keeps inference to
+        about 4.3&nbsp;ms.
+      </p>
+      <div class="fig">
+        <img src="web/NeuralNetwork7.png" alt="Residual predictor architecture (two linear layers with ReLU and TanH activations) and an illustration of the ideal versus actual ball trajectory">
+        <div class="caption">Fig. 4 &mdash; The residual predictor: a two-layer network mapping (p<sub>0</sub>, v<sub>0</sub>, d, p<sub>k</sub>) to the residual &delta; between the ideal (magenta) and actual (green) trajectory.</div>
+      </div>
+
+      <h3>Contact Ready &amp; Motion Planning</h3>
+      <p>
+        Once p<sub>s</sub> and the pre-strike orientation &theta;<sub>d</sub> are known, an RRT-Connect motion
+        planner computes the joint trajectory that brings the paddle from its current pose to the target pose,
+        executed by the arm&rsquo;s joint position controller.
+      </p>
+
+      <h3>Ball Strike: Learning the Striking Velocity</h3>
+      <p>
+        With the paddle positioned at p<sub>s</sub>, the joint velocities &omega;<sub>4</sub>, &omega;<sub>5</sub>,
+        &omega;<sub>6</sub> (roll/pitch/yaw &mdash; sufficient to direct the ball anywhere) are predicted as a
+        function of v<sub>0</sub>, p<sub>s</sub>, and the desired landing position p<sub>L</sub>. We model this
+        mapping with a random forest regressor, trained on data collected by hitting the ball with random joint
+        velocities and recording where it lands; a PID controller then executes the predicted velocities at the
+        moment of contact.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="results">
+    <div class="col">
+      <h2>Results</h2>
+      <p>
+        Validated in a PyBullet simulation matching standard table tennis dimensions and ball properties
+        (20&nbsp;mm radius, 2.7&nbsp;g), with a restitution coefficient of 0.75 and modeled table friction and air
+        resistance.
+      </p>
+
+      <h3>Residual Predictor</h3>
+      <p>
+        Across 1000 thrown-ball trials, the residual predictor outperforms every baseline regressor tested on MSE,
+        MAE, and R<sup>2</sup> for estimating &delta;.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th>MSE (y)</th><th>MAE (y)</th><th>R&sup2; (y)</th><th>MSE (z)</th><th>MAE (z)</th><th>R&sup2; (z)</th></tr></thead>
+          <tbody>
+            <tr><td>SVR</td><td>0.0011</td><td>0.0274</td><td>&minus;4.29</td><td>0.0069</td><td>0.0683</td><td>0.775</td></tr>
+            <tr><td>Decision Tree</td><td>0.0004</td><td>0.0074</td><td>&minus;0.94</td><td>0.0069</td><td>0.0483</td><td>0.777</td></tr>
+            <tr><td>Random Forest (20)</td><td>0.00023</td><td>0.00688</td><td>&minus;0.05</td><td>0.00409</td><td>0.0387</td><td>0.869</td></tr>
+            <tr><td>KNN</td><td>0.0002</td><td>0.0061</td><td>&minus;0.33</td><td>0.0051</td><td>0.0475</td><td>0.835</td></tr>
+            <tr><td><b>Ours</b></td><td class="win">0.0001</td><td class="win">0.0053</td><td class="win">0.199</td><td class="win">0.0041</td><td class="win">0.0346</td><td class="win">0.888</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        The Y-axis R<sup>2</sup> is comparatively modest, but the residual there is small in absolute terms next to
+        the Z-axis residual &mdash; qualitatively, our model still reliably locates the collision point.
+      </p>
+
+      <h3>Motion Planning</h3>
+      <p>
+        Among eight classical motion planners benchmarked over 1000 random target points, RRT-Connect had both the
+        lowest mean planning time and the tightest interquartile range, motivating its use in the contact-ready
+        module.
+      </p>
+      <div class="fig">
+        <img src="web/motion_planner_performance_3.png" alt="Boxplot of planning times for RRT, PRM, RRT*, RRT-Connect, TRRT, BiTRRT, PDST, and EST">
+        <div class="caption">Fig. 5 &mdash; Planning time comparison across motion planners; RRT-Connect (bold) offers the most consistent, lowest planning time.</div>
+      </div>
+
+      <h3>Striking Velocity Planner</h3>
+      <p>
+        Repeating the striking-velocity experiment 1000 times with varied throw velocities and target landing
+        positions, the Random Forest regressor with 160 estimators achieved the best R<sup>2</sup> across all three
+        rotation axes tested.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Model</th><th colspan="3">Roll</th><th colspan="3">Pitch</th><th colspan="3">Yaw</th></tr></thead>
+          <tbody>
+            <tr><td></td><td>R&sup2;</td><td>MAE</td><td>MSE</td><td>R&sup2;</td><td>MAE</td><td>MSE</td><td>R&sup2;</td><td>MAE</td><td>MSE</td></tr>
+            <tr><td>Decision Tree</td><td>0.681</td><td>2.49</td><td>20.3</td><td>0.702</td><td>4.27</td><td>38.5</td><td>0.169</td><td>2.13</td><td>8.06</td></tr>
+            <tr><td>KNN</td><td>0.796</td><td>2.32</td><td>13.0</td><td>0.652</td><td>4.33</td><td>45.0</td><td>0.662</td><td>1.37</td><td>3.27</td></tr>
+            <tr><td>SVR</td><td>0.800</td><td>2.70</td><td>12.7</td><td>0.665</td><td>4.15</td><td>43.3</td><td>0.596</td><td>1.52</td><td>3.92</td></tr>
+            <tr><td><b>Random Forest (160, ours)</b></td><td class="win">0.887</td><td class="win">1.54</td><td class="win">7.21</td><td>0.689</td><td>4.33</td><td>40.2</td><td class="win">0.687</td><td>1.35</td><td>3.04</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="fig">
+        <img src="web/TargetModuleQuality_3.png" alt="Two example target zones showing intended hitting point (red X) and where the ball actually landed across trials (green X marks clustered nearby)">
+        <div class="caption">Fig. 6 &mdash; Qualitative accuracy of the striking velocity planner: intended target (red &times;) versus actual landing positions (green &times;) across repeated trials.</div>
+      </div>
+
+      <h3>End-to-End Performance</h3>
+      <p>
+        Across 1000 randomly thrown balls, the full system &mdash; residual predictor plus learned striking
+        velocity &mdash; successfully intercepted <b>985</b>, a <b>98.5%</b> success rate. Without the residual
+        predictor, relying on the physics-only trajectory alone, the system consistently failed to intercept the
+        ball, since each bounce alters the trajectory in ways the ideal model cannot capture.
+      </p>
+      <div class="fig">
+        <img src="web/sequences4.png" alt="Paddle velocity over the four operational stages A (estimate/plan), B (move to contact-ready), C (wait for ball), D (execute strike), with corresponding arm poses below">
+        <div class="caption">Fig. 7 &mdash; Paddle velocity across the four operational stages: (A) estimate the striking point and plan, (B) move to the contact-ready pose, (C) wait for the ball, (D) execute the learned strike.</div>
+      </div>
+      <div class="fig">
+        <img src="web/inference_times_last.png" alt="Boxplot of inference times for the residual predictor (median 4.3ms) and the striking velocity planner (median 4.2ms)" style="max-width:35%; max-height:196px;">
+        <div class="caption">Fig. 8 &mdash; Inference times: the residual predictor (median 4.3&nbsp;ms) and striking velocity planner (median 4.2&nbsp;ms) together add well under 16&nbsp;ms, leaving ample budget for motion planning and control.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="limitations">
+    <div class="col">
+      <h2>Limitations &amp; Future Work</h2>
+      <p>
+        This work validates the approach entirely in a PyBullet simulation, assuming the first two ball positions
+        come from an upstream perception system; a real robot experiment is beyond the current paper&rsquo;s scope.
+        Future work includes integrating a high-speed 3D perception system for real-time ball tracking on the
+        physical arm, building a real-time control stack for low-latency contact-ready and strike execution,
+        adapting the striking-point estimator to real sensor noise, and fine-tuning motion planning and control for
+        the hardware&rsquo;s constraints.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="conclusion">
+    <div class="col">
+      <h2>Conclusion</h2>
+      <p>
+        We presented a learning-from-demonstration approach to robotic table tennis built from three modules:
+        striking point estimation, contact-ready motion, and ball striking. A residual learning scheme corrects a
+        physics-based trajectory estimate using only the ball&rsquo;s first two observed positions, and a random
+        forest regressor learns the striking velocity needed to direct the ball to a target landing position.
+        Compared to reinforcement-learning approaches that require extensive, potentially unsafe real-world
+        trial-and-error, this sample-efficient formulation reaches 98.5% interception success in simulation while
+        keeping both learned components fast enough &mdash; a few milliseconds each &mdash; for real-time play.
+      </p>
+    </div>
+  </section>
+
+  <section id="citation">
+    <div class="col">
+      <h2>Citation</h2>
+      <p style="text-align:center;">This paper is currently under review. If you&rsquo;d like to reference it in the meantime:</p>
+      <pre><code>@misc{chowdhury2025learningtostrike,
+  title  = {Learning to Strike for Robotic Table Tennis},
+  author = {Chowdhury, Sakib and Guo, Yi},
+  note   = {Submitted, under review},
+  year   = {2025}
+}</code></pre>
+    </div>
+  </section>
+
+  <footer>
+    <a href="../../index.html#research">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>
