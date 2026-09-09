@@ -30,7 +30,7 @@ Personal academic portfolio website for Sakib Chowdhury — PhD student in Robot
 | `js/` | JavaScript files |
 | `img/` | Images (avatar, project images) |
 | `fonts/` | Font files |
-| `sakib_resume.pdf` | Downloadable resume PDF |
+| `sakib_resume_2026.pdf` | Downloadable resume PDF |
 
 ## Local Development
 
