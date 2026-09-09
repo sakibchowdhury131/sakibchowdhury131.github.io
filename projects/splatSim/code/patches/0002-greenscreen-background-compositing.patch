@@ -1,0 +1,65 @@
+diff --git a/scripts/launch_nodes.py b/scripts/launch_nodes.py
+index a232870..372c34c 100644
+--- a/scripts/launch_nodes.py
++++ b/scripts/launch_nodes.py
+@@ -17,6 +17,7 @@ class Args:
+     robot_ip: str = "192.168.1.10"
+     gaussian_path : str = "/home/jennyw2/data/output/robot_iphone/point_cloud/iteration_30000/point_cloud.ply"
+     robot_name: str = "robot_iphone"
++    greenscreen: bool = False
+ 
+ 
+ def launch_robot_server(args: Args):
+@@ -106,7 +107,8 @@ def launch_robot_server(args: Args):
+ 
+         server = AppleOnPlatePybulletRobotServer(
+            port=port, host=args.hostname, serve_mode=AppleOnPlatePybulletRobotServer.SERVE_MODES.INTERACTIVE,
+-           camera_names=camera_names, robot_name=args.robot_name, cam_i=3, use_gripper=use_gripper
++           camera_names=camera_names, robot_name=args.robot_name, cam_i=3, use_gripper=use_gripper,
++           composite_bg_color=[0.0, 1.0, 0.0] if args.greenscreen else None,
+         )
+ 
+     elif args.robot == "sim_ur_pybullet_apple_interactive-nosplat":
+diff --git a/splatsim/robots/sim_robot_pybullet_base.py b/splatsim/robots/sim_robot_pybullet_base.py
+index a1e54be..340b0dc 100644
+--- a/splatsim/robots/sim_robot_pybullet_base.py
++++ b/splatsim/robots/sim_robot_pybullet_base.py
+@@ -231,8 +231,11 @@ class PybulletRobotServerBase:
+         camera_names: List[str] = ["base_rgb"],
+         cam_i: int = 254,
+         object_config_path: str = "./configs/object_configs/objects.yaml",
++        composite_bg_color: List[float] = None,
+     ):
+         self.serve_mode = serve_mode
++        self.composite_bg_color = composite_bg_color
++        self._composite_bg_mask = None
+         self.use_link_centers = use_link_centers
+         self.robot_name = robot_name
+         self.camera_names = camera_names
+@@ -515,7 +518,7 @@ class PybulletRobotServerBase:
+                 ],  # Even tho we're not using this, make sure to load at max 1 camera for memory purposes
+             )
+ 
+-            bg_color = [1, 1, 1]
++            bg_color = self.composite_bg_color if self.composite_bg_color is not None else [1, 1, 1]
+             self.background = torch.tensor(bg_color, dtype=torch.float32, device="cuda")
+ 
+             self.base_camera = self.setup_camera_from_dataset(
+@@ -785,6 +788,17 @@ class PybulletRobotServerBase:
+             transformations_cache=self.transformations_cache,
+         )
+ 
++        if self.composite_bg_color is not None:
++            if self._composite_bg_mask is None:
++                robot_point_indices = torch.cat(segmented_list) if len(segmented_list) else torch.zeros(
++                    0, dtype=torch.long, device=xyz.device
++                )
++                mask = torch.ones(xyz.shape[0], dtype=torch.bool, device=xyz.device)
++                mask[robot_point_indices] = False
++                self._composite_bg_mask = mask
++            opacity = opacity.clone()
++            opacity[self._composite_bg_mask] = -20.0
++
+         # Transform each object splat to be in the right pose
+         cur_object_position_list = []
+         cur_object_rotation_list = []
