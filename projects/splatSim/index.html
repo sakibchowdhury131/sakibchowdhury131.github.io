@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Splatting a Robot Arm — SplatSim Field Notes</title>
-  <meta name="description" content="Field notes from installing and extending SplatSim, a Gaussian-splatting robot simulator: a dead dependency, a 30-minute silence that looked like a hang, and a green-screen technique for swapping the room out from under a photorealistic robot render.">
+  <meta name="description" content="Field notes from installing and extending SplatSim, a Gaussian-splatting robot simulator: a dead dependency and a green-screen technique for swapping the room out from under a photorealistic robot render.">
   <link rel="shortcut icon" href="../../img/favicon.png" />
   <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
   <style>
@@ -172,9 +172,8 @@
     <div class="venue-badge">Applied Project &middot; Bring-Up Log</div>
     <p class="dek">
       Field notes from installing <a href="https://splatsim.github.io" target="_blank" rel="noopener">SplatSim</a>
-      — a Gaussian-splatting robot simulator — on a bare workstation: a dead dependency, a 30-minute silence that
-      looked like a hang, and a green-screen technique for swapping the room out from under a photorealistic robot
-      render.
+      — a Gaussian-splatting robot simulator — on a bare workstation: a dead dependency and a green-screen
+      technique for swapping the room out from under a photorealistic robot render.
     </p>
     <div class="btn-row">
       <a class="btn" href="https://github.com/sakibchowdhury131/SplatSim-test" target="_blank" rel="noopener">Code (GitHub)</a>
@@ -187,13 +186,6 @@
       Transfer of RGB Manipulation Policies Using Gaussian Splatting</em></a>, ICRA 2025. All credit for the
       method, code, and captured data is theirs; these are independent notes from using their work and are not
       affiliated with the authors.
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="num">1</div><div class="lbl">dead submodule found &amp; fixed</div></div>
-      <div class="stat"><div class="num">~60&nbsp;GB</div><div class="lbl">colmap + splat + trajectory data</div></div>
-      <div class="stat"><div class="num">2.2M</div><div class="lbl">Gaussians in the robot scene</div></div>
-      <div class="stat"><div class="num">~30&nbsp;min</div><div class="lbl">silent (but healthy) splat load</div></div>
-      <div class="stat"><div class="num">166</div><div class="lbl">threads at idle, on 64 cores</div></div>
     </div>
   </header>
 
@@ -308,21 +300,7 @@
     </div>
   </section>
 
-  <section class="band" id="silence">
-    <div class="col">
-      <h2>The 30-Minute Silence</h2>
-      <p>
-        Loading the render server prints camera poses and then goes completely quiet for roughly half an hour
-        before a client can connect — including past its own final "Ready to serve." log line. The first instinct
-        is that it's hung. It isn't: loading a 2.2-million-Gaussian scene genuinely takes that long, and Python was
-        just buffering its own log output so the "done" message wasn't reaching disk yet. Confirmed it was healthy
-        by checking whether the process was still burning CPU/GPU cycles, and by directly probing its network
-        socket — which answered correctly well before the log admitted it was ready.
-      </p>
-    </div>
-  </section>
-
-  <section id="demo">
+  <section class="band" id="demo">
     <div class="col">
       <h2>First Real Render</h2>
       <p>
@@ -337,7 +315,7 @@
     </div>
   </section>
 
-  <section class="band" id="background">
+  <section id="background">
     <div class="col">
       <h2>Chasing a Different Background</h2>
       <p>
@@ -369,7 +347,7 @@
     </div>
   </section>
 
-  <section id="greenscreen">
+  <section class="band" id="greenscreen">
     <div class="col">
       <h2>Green-Screening the Room</h2>
       <p>
@@ -421,7 +399,7 @@
     </div>
   </section>
 
-  <section class="band" id="extending">
+  <section id="extending">
     <div class="col">
       <h2>Using This on Your Own Robot or Task</h2>
       <p>Everything above is really three different levels of commitment, depending on what already exists.</p>
@@ -451,7 +429,7 @@
     </div>
   </section>
 
-  <section id="appendix">
+  <section class="band" id="appendix">
     <div class="col">
       <h2>Code</h2>
       <p>
