@@ -29,3 +29,9 @@ projects/EntropicFlowPolicy/raw/
 # Raw/source assets for HeatDissipationPolicy: only the compressed
 # copies in web/ are used by the page. Keep the extracted originals locally.
 projects/HeatDissipationPolicy/raw/
+
+# Raw/source assets for HeatDissipationImageGeneration: only the
+# compressed copies in web/ are used by the page. Keep the notebook and
+# raw outputs (which duplicate the page's figures) locally.
+projects/HeatDissipationImageGeneration/outputs/
+projects/HeatDissipationImageGeneration/Heat_Dissipation_Image_Generation.ipynb
