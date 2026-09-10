@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Heat Dissipation Policy: Diffusion That Forgets Structure Like a Hot Object Forgets Its Shape</title>
+  <meta name="description" content="Heat Dissipation Policy: an alternative to Gaussian diffusion for action generation that corrupts action trajectories with the heat equation instead of noise, plus the discovery that DC (mean-offset) augmentation is a precondition for it to train at all.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#b9540a;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .wide{ max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    /* Hero */
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 820px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 17px; margin: 0 auto 6px; max-width: 760px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    .lede{ max-width: 720px; margin: 0 auto; color:#333; font-size: 17.5px; }
+
+    .eq-block{
+      margin: 22px auto 0; padding: 14px 18px; background: var(--band); border: 1px solid var(--border);
+      border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14.5px; display:inline-block; max-width: 100%; overflow-x:auto; text-align:left;
+    }
+    .eq-block .cap{ display:block; margin-top:8px; font-size:12px; color: var(--muted); font-family: "Noto Sans", sans-serif; }
+
+    /* Stat row */
+    .stat-row{ display:grid; grid-template-columns: repeat(3,1fr); gap:14px; max-width: 900px; margin: 26px auto 0; }
+    .stat{ background:#fff; border:1px solid var(--border); border-radius:12px; padding: 16px 16px 14px; }
+    .stat .num{ font-family:"Google Sans","Noto Sans",sans-serif; font-weight:700; font-size: 1.9rem; line-height:1; color: var(--accent); }
+    .stat .lbl{ font-size:12.5px; color: var(--muted); margin-top:6px; }
+    @media (max-width: 700px){ .stat-row{ grid-template-columns: 1fr; } }
+
+    /* Bands / sections */
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .section-intro{ text-align:center; max-width: 760px; margin: 0 auto 24px; color: var(--muted); }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img{ max-width:100%; max-height: 560px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .fig-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items:start; margin: 20px 0; }
+    .fig-row.three{ grid-template-columns: 1fr 1fr 1fr; }
+    .fig-row img, .fig-row video{ max-width:100%; max-height: 480px; height:auto; border-radius: 8px; border:1px solid var(--border); display:block; background:#000; }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 760px; margin-left:auto; margin-right:auto; }
+    .fig-row figcaption{ font-size: 12.5px; color: var(--muted); margin-top: 8px; text-align:center; }
+
+    .diagram-row{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:13px; color: var(--muted); margin: 18px 0; }
+    .diagram-row .node{ background:#fff; border:1px solid var(--border); border-radius:8px; padding:8px 12px; color: var(--ink); }
+    .diagram-row .arrow{ color: var(--muted); }
+
+    table{ width:100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
+    th{ background:#fff; font-weight:700; }
+    td:first-child, th:first-child{ text-align:left; }
+    td.num, th.num{ text-align:right; }
+    .win{ color: var(--ok); font-weight: 700; }
+    .muted-cell{ color: var(--muted); }
+    .table-caption{ font-size: 12.5px; color: var(--muted); text-align:center; margin-top: -8px; margin-bottom: 16px; }
+
+    .callout{
+      border:1px solid var(--border); border-left: 4px solid var(--ink); background:#fff;
+      border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0;
+    }
+    .callout .kicker{ font-size: 11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color: var(--muted); display:block; margin-bottom:6px; }
+    .callout p{ margin:0; }
+    .callout p + p{ margin-top: 10px; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+
+    @media (max-width: 620px){
+      .fig-row, .fig-row.three{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#projects">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>Heat Dissipation Policy: Diffusion That Forgets Structure Like a Hot Object Forgets Its Shape</h1>
+    <div class="authors">Sakib Chowdhury</div>
+    <div class="affiliation">Stevens Institute of Technology</div>
+    <div class="venue-badge">Independent Research &middot; Unpublished</div>
+    <p class="lede">
+      Standard diffusion corrupts data with i.i.d. Gaussian noise, destroying every frequency at the same rate.
+      The Heat Dissipation Policy corrupts action trajectories with the heat equation instead &mdash; a physical
+      process that erases fine detail first and coarse structure last, for free.
+    </p>
+    <div class="eq-block">
+      &#251;(k, t) = &#251;(k, 0) &middot; exp(&minus;2&pi;&sup2;&sigma;(t)&sup2;|k|&sup2;)
+      <span class="cap">Forward corruption in Fourier space &mdash; the attenuation factor is exactly 1 at k=0, for every &sigma;</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="num">0&rarr;91%</div>
+        <div class="lbl">Mean eval score on Push-T: flat zero trained the naive way, ~91% once the DC/mean offset is augmented during training</div>
+      </div>
+      <div class="stat">
+        <div class="num">6/16</div>
+        <div class="lbl">Held-out seeds where the DC-augmented Heat policy outright beats standard Diffusion Policy</div>
+      </div>
+      <div class="stat">
+        <div class="num">1.000</div>
+        <div class="lbl">Mean score across 18 different DC offsets once augmented &mdash; every one converges to the same trajectory</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:22px;">
+      <a class="btn" href="https://github.com/sakibchowdhury131/HeatDissipationPolicy" target="_blank" rel="noopener">Code (GitHub)</a>
+      <a class="btn secondary" href="#dc">The DC finding &darr;</a>
+    </div>
+  </header>
+
+  <section id="how">
+    <div class="col">
+      <h2>Replacing Gaussian Noise With the Heat Equation</h2>
+      <p>
+        Standard diffusion corrupts a trajectory with i.i.d. Gaussian noise and learns to reverse it &mdash; every
+        frequency destroyed at the same rate. The heat equation destroys structure differently: high frequencies
+        die first, low frequencies survive longest. Applied to an action chunk instead of an image, that ordering
+        is a coarse-to-fine motion plan for free &mdash; the rough trajectory shape is recoverable from very few
+        reverse steps, fine corrections come last.
+      </p>
+      <div class="diagram-row">
+        <span class="node">clean action a<sub>0</sub></span><span class="arrow">&mdash;heat blur&rarr;</span><span class="node">low-freq a<sub>T</sub></span>
+      </div>
+      <div class="diagram-row">
+        <span class="node">a<sub>t</sub></span><span class="arrow">model predicts</span><span class="node">â<sub>0</sub></span><span class="arrow">&mdash;re-blur to t&minus;1&rarr;</span><span class="node">a<sub>t&minus;1</sub></span>
+      </div>
+
+      <div class="fig">
+        <img src="web/images/heat_forward_process.png" alt="Heat dissipation forward process applied to a Push-T action trajectory, showing coarse-to-fine frequency decay">
+        <div class="caption">The forward heat process on an action chunk: FFT-based blur removes high-frequency detail first while conserving the trajectory's total mass exactly.</div>
+      </div>
+
+      <p>
+        &sigma;(t) is spaced as &radic;(linspace(&sigma;<sub>min</sub>&sup2;, &sigma;<sub>max</sub>&sup2;, T)) rather
+        than linearly. A linear schedule in &sigma; is quadratic in the exponent, so it front-loads almost all the
+        information destruction into the first few steps and wastes the rest of the schedule on an already-flat
+        signal &mdash; the sqrt schedule destroys detail at a uniform rate across all T steps, the same reasoning
+        that motivates cosine noise schedules in standard diffusion.
+      </p>
+
+      <table>
+        <thead><tr><th>Aspect</th><th>Diffusion Policy</th><th>Heat Dissipation Policy</th></tr></thead>
+        <tbody>
+          <tr><td>Forward corruption</td><td class="muted-cell">add i.i.d. Gaussian noise</td><td>blur with the heat kernel (FFT multiply)</td></tr>
+          <tr><td>Frequency treatment</td><td class="muted-cell">every frequency corrupted equally</td><td>high frequencies die first, low frequencies survive longest</td></tr>
+          <tr><td>Network predicts</td><td class="muted-cell"><code>noise ε, then a0 = at − ε</code></td><td><code>clean signal â0 directly</code></td></tr>
+          <tr><td>Mass conservation</td><td class="muted-cell">not applicable</td><td>exact &mdash; the zero-frequency (DC) term is untouched by construction</td></tr>
+          <tr><td>Structure at few steps</td><td class="muted-cell">unstructured partial denoise</td><td>coarse-to-fine &mdash; a valid rough plan after very few reverse steps</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="band" id="dc">
+    <div class="wide">
+      <h2>DC Augmentation Isn't a Tuning Knob &mdash; It's a Precondition</h2>
+
+      <div class="callout">
+        <span class="kicker">Trained the naive way</span>
+        <p>
+          Eval score sits at <b>0.000 for all 100 epochs</b>. The fix: randomize the DC component (the
+          zero-frequency / mean offset) of each training action chunk, forcing the model to handle arbitrary
+          offsets rather than the one it happened to see. With DC augmentation, the same architecture climbs to a
+          best eval score of <b>0.857</b>.
+        </p>
+        <p>
+          The reason: the heat kernel's attenuation factor exp(&minus;2&pi;&sup2;&sigma;&sup2;|k|&sup2;) equals
+          exactly <b>1</b> at k=0 for every &sigma;. The DC term &mdash; the chunk's mean offset &mdash; is
+          mathematically untouched by the forward process at any noise level. If every training chunk shares
+          close to the same mean, the network is never asked to denoise a different one, and at test time an
+          unfamiliar offset falls entirely outside what it ever learned to reconstruct.
+        </p>
+      </div>
+
+      <h3>Same environment, 18 different noise draws</h3>
+      <p class="section-intro" style="margin-bottom:12px;">
+        Freeze one Push-T configuration and vary only the random seed for Diffusion Policy, or only the
+        training-time DC offset (0.05 &rarr; 0.95) for Heat Dissipation. A robust policy's behavior on a fixed
+        environment shouldn't hinge on either.
+      </p>
+      <div class="fig-row">
+        <div>
+          <img src="web/images/dc_augmented_18runs.png" alt="With DC augmentation, 18 Heat Dissipation runs at different DC offsets all converge to the same trajectory, matching Diffusion Policy's consistency">
+        </div>
+        <div>
+          <img src="web/images/without_dc_18runs.png" alt="Without DC augmentation, 18 Heat Dissipation runs at different DC offsets fan out into wildly different, mostly failing trajectories">
+        </div>
+      </div>
+      <div class="caption">
+        Left, DC-augmented: all 18 DC offsets converge to essentially the same trajectory &mdash; mean score 1.000,
+        min 1.000, max 1.000. As consistent as Diffusion Policy's own noise sweep. Right, without DC augmentation:
+        trajectories fan out by DC value into unrelated paths &mdash; mean score collapses to 0.307. The policy is
+        accidentally reading out a value that should be irrelevant.
+      </div>
+
+      <div class="fig" style="margin-top:32px;">
+        <img src="web/images/training_comparison_original.png" alt="Training loss (log scale) and eval score per epoch for Diffusion Policy vs. Heat Dissipation Policy over 100 epochs">
+        <div class="caption">Training loss (log scale) and eval score per epoch, 100 epochs, DC-augmented run. Heat Dissipation's loss falls faster and lower, and its eval score climbs to parity with Diffusion Policy after the DC fix.</div>
+      </div>
+
+      <div class="fig" style="margin-top:32px;">
+        <img src="web/images/trajectory_bundles.png" alt="Trajectory bundles: training demonstrations vs Diffusion Policy eval rollouts vs Heat Dissipation eval rollouts, overlaid on the Push-T environment">
+        <div class="caption">All 16 eval rollouts overlaid, against the 206-episode training set. Diffusion Policy: 16/16 above the 0.5 threshold. Heat Dissipation: 15/16 &mdash; both produce the same tangled, exploratory sweep-and-push pattern the human demonstrations show, rather than a single clean line.</div>
+      </div>
+
+      <h3>Head-to-head on 16 held-out seeds</h3>
+      <p class="section-intro" style="margin-bottom:12px;">
+        Once DC-augmented, Heat Dissipation is competitive with &mdash; if slightly behind &mdash; standard
+        Diffusion Policy: mean score 0.912 vs. 0.982, and it outright wins on 6 of 16 seeds. One clear failure
+        mode remains (seed 435829, below).
+      </p>
+
+      <div class="fig-row three">
+        <figure>
+          <video src="web/videos/seed_985772_heatwins.mp4" poster="web/videos/seed_985772_heatwins_poster.jpg" autoplay loop muted playsinline></video>
+          <figcaption>Heat wins &middot; seed 985772 &middot; DP 0.917, Heat 1.000</figcaption>
+        </figure>
+        <figure>
+          <video src="web/videos/seed_152315_bothperfect.mp4" poster="web/videos/seed_152315_bothperfect_poster.jpg" autoplay loop muted playsinline></video>
+          <figcaption>Both perfect &middot; seed 152315 &middot; DP 1.000, Heat 1.000</figcaption>
+        </figure>
+        <figure>
+          <video src="web/videos/seed_435829_heatfails.mp4" poster="web/videos/seed_435829_heatfails_poster.jpg" autoplay loop muted playsinline></video>
+          <figcaption>Heat's failure case &middot; seed 435829 &middot; DP 0.959, Heat 0.000</figcaption>
+        </figure>
+      </div>
+
+      <table>
+        <thead><tr><th>Seed</th><th class="num">DP score</th><th class="num">Heat score</th><th>Winner</th></tr></thead>
+        <tbody>
+          <tr><td>985772</td><td class="num">0.917</td><td class="num">1.000</td><td class="win">Heat Dissipation</td></tr>
+          <tr><td>305711</td><td class="num">0.983</td><td class="num">0.969</td><td>Diffusion Policy</td></tr>
+          <tr><td>435829</td><td class="num">0.959</td><td class="num">0.000</td><td>Diffusion Policy</td></tr>
+          <tr><td>117952</td><td class="num">0.942</td><td class="num">0.958</td><td class="win">Heat Dissipation</td></tr>
+          <tr><td>963395</td><td class="num">1.000</td><td class="num">0.896</td><td>Diffusion Policy</td></tr>
+          <tr><td>152315</td><td class="num">1.000</td><td class="num">1.000</td><td>Tie</td></tr>
+          <tr><td>882371</td><td class="num">1.000</td><td class="num">0.913</td><td>Diffusion Policy</td></tr>
+          <tr><td>359783</td><td class="num">0.999</td><td class="num">0.970</td><td>Diffusion Policy</td></tr>
+          <tr><td>304137</td><td class="num">0.998</td><td class="num">1.000</td><td class="win">Heat Dissipation</td></tr>
+          <tr><td>122579</td><td class="num">0.961</td><td class="num">0.984</td><td class="win">Heat Dissipation</td></tr>
+          <tr><td>610581</td><td class="num">0.974</td><td class="num">1.000</td><td class="win">Heat Dissipation</td></tr>
+          <tr><td>448242</td><td class="num">1.000</td><td class="num">0.985</td><td>Diffusion Policy</td></tr>
+          <tr><td>374564</td><td class="num">1.000</td><td class="num">1.000</td><td>Tie</td></tr>
+          <tr><td>735831</td><td class="num">1.000</td><td class="num">0.923</td><td>Diffusion Policy</td></tr>
+          <tr><td>736326</td><td class="num">1.000</td><td class="num">1.000</td><td>Tie</td></tr>
+          <tr><td>310744</td><td class="num">0.974</td><td class="num">0.995</td><td class="win">Heat Dissipation</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">mean DP = 0.982 &middot; mean Heat = 0.912 &middot; n = 16 seeds &middot; Heat wins 6, DP wins 7, ties 3</div>
+    </div>
+  </section>
+
+  <section id="generalization">
+    <div class="col">
+      <h2>Does the DC-Augmented Policy Hold Up Off-Distribution?</h2>
+      <p class="section-intro">
+        Two follow-up evaluations: a 50-seed random batch, and a hand-built set of hard cases &mdash; the T-block
+        starting in corners, at extreme angles, in configurations the training distribution rarely produced.
+      </p>
+      <div class="fig-row">
+        <div>
+          <img src="web/images/score_distribution_50seed.png" alt="Score distributions and trajectory grid across 50 random Push-T seeds for Diffusion Policy vs Heat Dissipation Policy">
+        </div>
+        <div>
+          <img src="web/images/hard_configs.png" alt="Side-by-side trajectories on hand-crafted hard Push-T configurations">
+        </div>
+      </div>
+      <div class="caption">Left &mdash; score distribution across 50 random seeds; Heat's spread is wider than DP's, consistent with the single hard failure seen in the 16-seed table. Right &mdash; hand-crafted hard configurations (corner starts, extreme block angles), run side-by-side for both policies.</div>
+    </div>
+  </section>
+
+  <section class="band" id="extensions">
+    <div class="col">
+      <h2>The Same Corruption Process, Applied to Pixels</h2>
+      <p class="section-intro">
+        If the heat kernel works as a forward process for 1D action trajectories, the same math applies to images
+        and video frames. Early-stage code for both directions lives in <code>generative_extensions/</code> in
+        this repo.
+      </p>
+      <ul>
+        <li><b>Heat dissipation image generation</b> &mdash; the direct 2D analogue: blur an image with the heat kernel instead of adding Gaussian noise, then learn to reverse it. Closely related to Cold Diffusion (Bansal et al., 2022) and Blurring Diffusion Models (Hoogeboom &amp; Salimans, 2023).</li>
+        <li><b>Entropy-conserving generation</b> &mdash; a different idea: instead of traversing an entropy gradient, move <i>along</i> a constant-entropy manifold. A phase-shuffled image has identical spectral entropy to its source but no structure; a model can be trained to reorganize shuffled &rarr; coherent while conserving entropy exactly. Unexplored in the literature as far as I've found.</li>
+        <li><b>Entropy conservation for video</b> &mdash; consecutive frames have near-constant entropy by nature, which makes the constant-entropy idea a plausible fit for temporal consistency in video generation.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin-bottom:4px;">Code, training scripts, and full result figures: <a href="https://github.com/sakibchowdhury131/HeatDissipationPolicy" target="_blank" rel="noopener">github.com/sakibchowdhury131/HeatDissipationPolicy</a></p>
+    <p style="margin-bottom:10px;">A related, code-independent project on the same Push-T benchmark: <a href="../EntropicFlowPolicy/">Entropic Flow Policy</a></p>
+    <a href="../../index.html#projects">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>

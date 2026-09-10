@@ -21,3 +21,11 @@ projects/learning-to-strike/Figures/
 # Raw/source assets for synthNID: only the compressed copies in web/
 # are used by the page. Keep the original talk recording locally.
 projects/synthNID/*.mp4
+
+# Raw/source assets for EntropicFlowPolicy: only the compressed copies
+# in web/ are used by the page. Keep the extracted originals locally.
+projects/EntropicFlowPolicy/raw/
+
+# Raw/source assets for HeatDissipationPolicy: only the compressed
+# copies in web/ are used by the page. Keep the extracted originals locally.
+projects/HeatDissipationPolicy/raw/

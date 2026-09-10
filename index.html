@@ -402,6 +402,48 @@
 
             <div class="entry">
                 <div class="media">
+                    <img src="projects/EntropicFlowPolicy/web/images/entropy_field.png" alt="The learned goal-reachability entropy landscape: a contour map showing entropy decreasing toward a basin centered on the goal" loading="lazy">
+                </div>
+                <div>
+                    <h3><a href="projects/EntropicFlowPolicy/">Entropic Flow Policy: Contracting Goal-Reachability Entropy Instead of Chasing Reward</a></h3>
+                    <div class="meta">Imitation Learning · Diffusion Policies · Robot Learning</div>
+                    <p>
+                        An imitation-learning policy trained to minimize a single quantity — goal-reachability
+                        entropy — instead of imitating actions or maximizing reward, paired with a diffusion-style
+                        action sampler. On the Push-T benchmark, adding a handful of labeled failure demonstrations
+                        turns this into the only method that survives an adversarial starting position, where every
+                        baseline scores at or near zero.
+                    </p>
+                    <div class="links">
+                        <a href="projects/EntropicFlowPolicy/">Full write-up →</a>
+                        <a href="https://github.com/sakibchowdhury131/EntropicFlowPolicy">Code</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="media">
+                    <img src="projects/HeatDissipationPolicy/web/images/dc_augmented_18runs.png" alt="With DC augmentation, 18 Heat Dissipation Policy runs at different mean offsets all converge to the same successful Push-T trajectory" loading="lazy">
+                </div>
+                <div>
+                    <h3><a href="projects/HeatDissipationPolicy/">Heat Dissipation Policy: Diffusion That Forgets Structure Like a Hot Object Forgets Its Shape</a></h3>
+                    <div class="meta">Diffusion Models · Action Generation · Robot Learning</div>
+                    <p>
+                        An alternative to Gaussian diffusion for generating robot action trajectories: corrupt the
+                        action chunk with the heat equation instead of noise, so fine detail is destroyed first and
+                        coarse structure survives longest. The central finding — trained the naive way, the policy
+                        never learns at all (0.000 eval score for 100 epochs); augmenting the training data's DC
+                        (mean) offset is the fix, and not a tuning knob but a mathematical precondition.
+                    </p>
+                    <div class="links">
+                        <a href="projects/HeatDissipationPolicy/">Full write-up →</a>
+                        <a href="https://github.com/sakibchowdhury131/HeatDissipationPolicy">Code</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="entry">
+                <div class="media">
                     <img src="projects/splatSim/assets/images/01_first_render.jpg" alt="A photorealistic Gaussian-splat render of a UR5 robot arm reaching toward a red apple on a desk" loading="lazy">
                 </div>
                 <div>

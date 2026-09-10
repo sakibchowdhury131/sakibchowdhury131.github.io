@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Entropic Flow Policy: Contracting Goal-Reachability Entropy Instead of Maximizing Reward</title>
+  <meta name="description" content="Entropic Flow Policy (EFP): an imitation-learning policy trained to minimize goal-reachability entropy instead of imitating actions or maximizing reward, paired with a diffusion-style action sampler. On Push-T, adding failure demonstrations lets it survive an adversarial start where every baseline fails.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#1a56db;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .wide{ max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    /* Hero */
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 820px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 17px; margin: 0 auto 6px; max-width: 760px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    .lede{ max-width: 720px; margin: 0 auto; color:#333; font-size: 17.5px; }
+
+    .eq-block{
+      margin: 22px auto 0; padding: 14px 18px; background: var(--band); border: 1px solid var(--border);
+      border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14.5px; display:inline-block; max-width: 100%; overflow-x:auto; text-align:left;
+    }
+    .eq-block .cap{ display:block; margin-top:8px; font-size:12px; color: var(--muted); font-family: "Noto Sans", sans-serif; }
+
+    /* Stat row */
+    .stat-row{ display:grid; grid-template-columns: repeat(3,1fr); gap:14px; max-width: 900px; margin: 26px auto 0; }
+    .stat{ background:#fff; border:1px solid var(--border); border-radius:12px; padding: 16px 16px 14px; }
+    .stat .num{ font-family:"Google Sans","Noto Sans",sans-serif; font-weight:700; font-size: 1.9rem; line-height:1; color: var(--accent); }
+    .stat .lbl{ font-size:12.5px; color: var(--muted); margin-top:6px; }
+    @media (max-width: 700px){ .stat-row{ grid-template-columns: 1fr; } }
+
+    /* Bands / sections */
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .section-intro{ text-align:center; max-width: 760px; margin: 0 auto 24px; color: var(--muted); }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img{ max-width:100%; max-height: 560px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .fig-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items:start; margin: 20px 0; }
+    .fig-row.three{ grid-template-columns: 1fr 1fr 1fr; }
+    .fig-row img, .fig-row video{ max-width:100%; max-height: 480px; height:auto; border-radius: 8px; border:1px solid var(--border); display:block; background:#000; }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 760px; margin-left:auto; margin-right:auto; }
+    .fig-row figcaption{ font-size: 12.5px; color: var(--muted); margin-top: 8px; text-align:center; }
+
+    /* Method comparison grid (small rollout clips) */
+    .method-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin: 18px 0; }
+    .method-card{ border:1px solid var(--border); border-radius: 10px; overflow:hidden; background:#fff; }
+    .method-card video{ width:100%; display:block; background:#000; aspect-ratio:1/1; object-fit:contain; }
+    .method-card .meta{ padding: 8px 10px 10px; text-align:center; }
+    .method-card .mname{ font-size: 12.5px; font-weight:600; }
+    .method-card .mscore{ font-size: 12px; color: var(--muted); margin-top:2px; }
+    .method-card .mscore.win{ color: var(--ok); font-weight:700; }
+    .grid-label{ font-size: 13.5px; font-weight:700; margin: 22px 0 4px; text-align:center; }
+    .grid-sub{ font-size: 12.5px; color: var(--muted); text-align:center; margin-bottom: 6px; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
+    th{ background:#fff; font-weight:700; }
+    td:first-child, th:first-child{ text-align:left; }
+    td.num, th.num{ text-align:right; }
+    .win{ color: var(--ok); font-weight: 700; }
+    .muted-cell{ color: var(--muted); }
+    .table-caption{ font-size: 12.5px; color: var(--muted); text-align:center; margin-top: -8px; margin-bottom: 16px; }
+
+    .callout{
+      border:1px solid var(--border); border-left: 4px solid var(--ink); background:#fff;
+      border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0;
+    }
+    .callout .kicker{ font-size: 11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color: var(--muted); display:block; margin-bottom:6px; }
+    .callout p{ margin:0; }
+    .callout p + p{ margin-top: 10px; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+
+    @media (max-width: 720px){
+      .method-grid{ grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 620px){
+      .fig-row, .fig-row.three{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#projects">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>Entropic Flow Policy: A Policy That Contracts Entropy Instead of Chasing Reward</h1>
+    <div class="authors">Sakib Chowdhury</div>
+    <div class="affiliation">Stevens Institute of Technology</div>
+    <div class="venue-badge">Independent Research &middot; Unpublished</div>
+    <p class="lede">
+      Entropic Flow Policy (EFP) replaces the reward function with a single quantity &mdash; the log-count of
+      trajectories still reachable to the goal &mdash; and trains a policy to make that number shrink at every
+      step. Paired with a diffusion-style action sampler, imitation learning becomes a contraction problem
+      instead of an action-mimicry problem.
+    </p>
+    <div class="eq-block">
+      H(s, s<sub>g</sub>) = log&nbsp;|{&nbsp;&tau; : s&nbsp;&rarr;&nbsp;s<sub>g</sub>, |&tau;|&nbsp;&le;&nbsp;H&nbsp;}|
+      &nbsp;&nbsp;&mdash;&nbsp;&nbsp; a good policy picks a such that H(T(s,a), s<sub>g</sub>) &lt; H(s, s<sub>g</sub>)
+      <span class="cap">Goal-reachability entropy, and the contraction principle it implies</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="num">64%</div>
+        <div class="lbl">Push-T success with entropy + failure-demo supervision, under an adversarial start &mdash; every baseline scored &le;24%</div>
+      </div>
+      <div class="stat">
+        <div class="num">0%</div>
+        <div class="lbl">EFP's score <i>without</i> failure demos, under perturbation &mdash; entropy guidance actively fights the diffusion prior instead of correcting it</div>
+      </div>
+      <div class="stat">
+        <div class="num">3</div>
+        <div class="lbl">Escalating tasks it took to separate EFP from behavior cloning &mdash; arm reaching, obstacle navigation, then Push-T</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:22px;">
+      <a class="btn" href="https://github.com/sakibchowdhury131/EntropicFlowPolicy" target="_blank" rel="noopener">Code (GitHub)</a>
+      <a class="btn secondary" href="#pusht">Headline result &darr;</a>
+    </div>
+  </header>
+
+  <section id="idea">
+    <div class="col">
+      <h2>Entropy as the Only Supervisory Signal</h2>
+      <p>
+        Most imitation learning either copies actions directly (behavior cloning) or infers a reward and
+        optimizes it (inverse RL). EFP does neither. It defines <b>goal-reachability entropy</b>: from a state
+        s, how many distinct trajectories of length &le;&nbsp;H still reach the goal s<sub>g</sub>? Far from the
+        goal, many paths remain viable &mdash; entropy is high. Near the goal, the funnel narrows &mdash; entropy
+        collapses toward zero. A policy that always moves toward lower entropy is, by construction, moving toward
+        the goal.
+      </p>
+      <p>
+        Demonstrations are treated as an empirical trace of that funnel, not as actions to imitate. That
+        distinction gives EFP a self-correcting property plain behavior cloning lacks: if the agent drifts off
+        the demonstrated path, the entropy gradient still points back toward the funnel, because entropy is
+        defined over the whole state space, not just the states a demo happened to visit.
+      </p>
+
+      <table>
+        <thead><tr><th>Aspect</th><th>Standard RL</th><th>MaxEnt RL</th><th>EFP (this work)</th></tr></thead>
+        <tbody>
+          <tr><td>Entropy's role</td><td class="muted-cell">not used</td><td class="muted-cell">maximize <i>policy</i> entropy</td><td>minimize <i>reachability</i> entropy</td></tr>
+          <tr><td>Reward signal</td><td class="muted-cell">extrinsic</td><td class="muted-cell">extrinsic + entropy bonus</td><td>entropy <i>is</i> the signal</td></tr>
+          <tr><td>Core quantity</td><td class="muted-cell"><code>V(s)</code></td><td class="muted-cell"><code>V_soft(s)</code></td><td><code>H(s, s_g)</code> = log-reachability</td></tr>
+          <tr><td>Diffusion connection</td><td class="muted-cell">none</td><td class="muted-cell">none</td><td>state entropy sets the sampler's noise level</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <span class="kicker">The synthesis</span>
+        <p>
+          Diffusion policies already contract entropy &mdash; in <i>action</i> space, across denoising steps. EFP
+          contracts entropy in <i>state</i> space, across real timesteps. Entropic Flow Policy links the two: the
+          current state entropy sets the noise scale for the action sampler &mdash; broad, exploratory noise far
+          from the goal; tight, precise noise near it &mdash; and the denoising score is nudged by
+          &minus;&nabla;<sub>a</sub>H<sub>&theta;</sub> at every step.
+        </p>
+      </div>
+
+      <h3>How it actually trains, in five stages</h3>
+      <p style="color:var(--muted); font-size:15px;">There is no reward model anywhere in this pipeline &mdash; every stage is supervised either by the demonstrations' own timestamps or by the dynamics the policy induces.</p>
+      <table>
+        <thead><tr><th style="width:30px;">#</th><th>Stage</th><th>What it's trained on</th></tr></thead>
+        <tbody>
+          <tr><td class="muted-cell">1</td><td>Label entropy from demo ordering</td><td class="muted-cell">H<sub>label</sub>(s<sub>t</sub>) = log(steps-remaining-to-goal + 1) &mdash; a free label from timestamps alone</td></tr>
+          <tr><td class="muted-cell">2</td><td>Train the entropy estimator H<sub>&theta;</sub>(s, s<sub>g</sub>)</td><td class="muted-cell">ranking loss (later states score lower than earlier ones) + anchor loss (H(s<sub>g</sub>,s<sub>g</sub>)=0) + soft regression to the label</td></tr>
+          <tr><td class="muted-cell">3</td><td>Train a dynamics model f<sub>&phi;</sub>(s, a) &rarr; s&prime;</td><td class="muted-cell">plain MSE &mdash; needed so &nabla;<sub>a</sub>H can be computed by differentiating through the predicted next state</td></tr>
+          <tr><td class="muted-cell">4</td><td>Train a DDPM score network &epsilon;<sub>&psi;</sub></td><td class="muted-cell">standard diffusion-policy noise-prediction objective on expert actions</td></tr>
+          <tr><td class="muted-cell">5</td><td>Sample actions at inference</td><td class="muted-cell">denoise as usual, but steer every step by &minus;&nabla;<sub>a</sub>H<sub>&theta;</sub>(f(s,a), s<sub>g</sub>), with the initial noise scale set by the current H &mdash; broad far from goal, tight near it</td></tr>
+        </tbody>
+      </table>
+
+      <h3>What the learned entropy landscape looks like</h3>
+      <div class="fig-row">
+        <div>
+          <img src="web/images/entropy_field.png" alt="Contour map of the learned entropy field around the goal, showing entropy decreasing toward a basin">
+        </div>
+        <div>
+          <img src="web/images/entropy_rollout.png" alt="Entropy value plotted along a successful rollout, decreasing monotonically toward zero at the goal">
+        </div>
+      </div>
+      <div class="caption">Left &mdash; H<sub>&theta;</sub>(s, s<sub>g</sub>) evaluated over the state space: a basin centered on the goal, with entropy rising smoothly the farther a state is from it, exactly the funnel the contraction principle assumes. Right &mdash; entropy sampled along one successful rollout, trending down toward zero at the goal.</div>
+    </div>
+  </section>
+
+  <section class="band" id="ladder">
+    <div class="col">
+      <h2>Three Tasks, Escalating in How Much They Punish Mode-Averaging</h2>
+      <p class="section-intro">Each experiment exists because the previous one wasn't hard enough to separate EFP from behavior cloning. The task design itself is a finding.</p>
+
+      <h3>Exp. 1 &mdash; 3-link planar arm, reaching</h3>
+      <p>
+        A redundant 3-DoF arm reaching for 10 targets, 200 demos. Each target has a single unambiguous solution
+        &mdash; no real multimodality, so this is a sanity check that entropy contraction works at all before
+        asking it to out-perform anything.
+      </p>
+      <div class="fig">
+        <img src="web/images/arm_reaching_result_panel.png" alt="Full six-panel result figure for the 3-link arm reaching experiment: entropy along trajectories, training losses, success rate, final distance distribution, end-effector trajectories, and the learned entropy landscape">
+        <div class="caption">EFP 70% vs. BC 70% &mdash; entropy contraction confirmed (entropy falls monotonically on successful rollouts, stays high on failures), but the task is too easy to differentiate methods.</div>
+      </div>
+
+      <h3>Exp. 2 &mdash; 2D navigation around a road-block obstacle</h3>
+      <p>
+        A point mass must get from a start region to a goal star past two rectangular blocks. First pass: the
+        blocks leave a narrow center gap, so upper/lower/middle are all technically viable &mdash; 291 demos.
+      </p>
+      <div class="callout">
+        <span class="kicker">Result</span>
+        <p>
+          BC 100% vs. EFP 72% &mdash; BC's mode-average sneaks straight through the gap, so the task didn't
+          punish averaging. EFP led only under perturbation (93% vs. 80% for a mixture-density baseline).
+        </p>
+      </div>
+      <p>
+        Closing the gap entirely forces a genuine binary choice &mdash; strictly upper or strictly lower, nothing
+        in between. If the "BC averages two modes into a useless path" story were the whole explanation, EFP
+        should win here. It doesn't: BC 100% vs. EFP 56% on the in-distribution, closed-gap variant &mdash; a
+        real neural net doesn't literally output the arithmetic mean of two modes, so plain BC still commits to
+        one path and wins. This is why Push-T (Exp. 3) exists: it needed a task where averaging two valid
+        solutions produces something that isn't just "a slightly worse path" but a <i>physically ineffective</i>
+        one.
+      </p>
+      <div class="fig-row">
+        <div>
+          <img src="web/images/entropy_field_open_gap.png" alt="Learned entropy landscape for the open-gap obstacle navigation task, showing a funnel splitting around two blocks toward the goal">
+        </div>
+        <div>
+          <img src="web/images/entropy_field_closed_gap.png" alt="Learned entropy landscape for the closed-gap obstacle navigation task, showing a flatter, less directional gradient around the block">
+        </div>
+      </div>
+      <div class="caption">Left, open-gap: one funnel per block, both merging cleanly toward the goal &mdash; the field itself doesn't distinguish the gap as a shortcut. Right, closed-gap: flatter and less directional around the block &mdash; a plausible reason the guidance signal underperforms plain imitation here.</div>
+
+      <h4 style="margin:28px 0 10px; font-size:0.95rem;">Every iteration, in full (v2 &rarr; v6)</h4>
+      <p style="color:var(--muted); font-size:15px;">Five task-design passes on the same road-block environment, in order. BC/MDN-BC beat EFP in every one except the open-gap perturbation case.</p>
+
+      <div class="fig" style="margin-top:22px;">
+        <img src="web/images/nav_v2_open_gap.png" alt="Full result figure for obstacle navigation v2: open center gap">
+        <div class="caption"><b>v2 &mdash; open center gap:</b> EFP 72%/68%/93% (In-Dist/OOD/Perturb) vs. BC &amp; MDN-BC ~100%/100%/93%,80%.</div>
+      </div>
+      <div class="fig">
+        <img src="web/images/nav_v3_failure_supervision.png" alt="Full result figure for obstacle navigation v3: failure supervision added">
+        <div class="caption"><b>v3 &mdash; failure supervision added</b> (120 failure trajectories, 1179 failure states): EFP 56%/72%/53% &mdash; failure demos alone don't close the gap to BC/MDN-BC (~100%/100%/93%).</div>
+      </div>
+      <div class="fig">
+        <img src="web/images/nav_v4_refined_failure_gradient.png" alt="Full result figure for obstacle navigation v4: refined failure gradient">
+        <div class="caption"><b>v4 &mdash; refined failure gradient</b> (left-approach, boundary-only, normalized): EFP improves to 72%/76%/60%, still behind BC/MDN-BC (~100%/100%/87&ndash;93%).</div>
+      </div>
+      <div class="fig">
+        <img src="web/images/nav_v5_closed_gap.png" alt="Full result figure for obstacle navigation v5: closed gap, strictly upper or lower paths">
+        <div class="caption"><b>v5 &mdash; gap fully closed</b> (genuine binary choice): EFP drops to 56%/52%/67% &mdash; still loses to BC/MDN-BC (~100%/100%/93%) even without an averaging escape route.</div>
+      </div>
+      <div class="fig">
+        <img src="web/images/nav_v6_fixed_start_flowmatching.png" alt="Full result figure for obstacle navigation v6: fixed start zone with flow matching and Diffusion Policy baseline">
+        <div class="caption"><b>v6 &mdash; fixed start zone + flow matching + DP baseline:</b> the task reverts to effectively single-path; all four methods land at ~92&ndash;100% and stop being informative.</div>
+      </div>
+
+      <h3 style="margin-top:36px;">Exp. 3 &mdash; Push-T (standard diffusion-policy benchmark)</h3>
+      <p>
+        Push a T-block into a target pose. No gap to sneak through: averaging two valid pushes produces a push
+        that works for neither.
+      </p>
+      <div class="callout">
+        <span class="kicker">Result</span>
+        <p><b>EFP + failure demos wins outright</b> &mdash; the headline result below.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pusht">
+    <div class="wide">
+      <h2>On Push-T, Failure Demonstrations Are the Ingredient That Makes Entropy Guidance Work</h2>
+      <p class="section-intro">
+        Two conditions were tested: <b>Standard</b> (agent starts in a normal position) and <b>Perturb</b> (agent
+        starts directly above the block &mdash; the setup that, without correction, drives the block <i>away</i>
+        from the goal). EFP was trained two ways: with a small set of labeled failure trajectories added to its
+        entropy estimator, and without.
+      </p>
+
+      <div class="fig">
+        <img src="web/images/pusht_result_panel.png" alt="Push-T benchmark: mean max coverage and success rate for EFP with/without failure demos, Diffusion Policy, BC, and MDN-BC, under Standard and Perturb start conditions">
+        <div class="caption">Success % (coverage &gt; 0.35) under both conditions. Standard: EFP+failure 64%, Diffusion Policy 24%, everything else 0%. Perturb (adversarial start): EFP+failure 56%, every other method 0%.</div>
+      </div>
+
+      <div class="callout">
+        <span class="kicker">Why failure demos matter</span>
+        <p>
+          Without them, EFP's entropy gradient has never seen what "getting worse" looks like, so under
+          perturbation it has no signal to correct course, and its guidance term actively fights the diffusion
+          prior. Coverage collapses to 0.000 in both conditions, <i>worse</i> than plain Diffusion Policy's 0.143 /
+          0.010.
+        </p>
+        <p>
+          Add failure trajectories, and the same architecture becomes the only method that survives the
+          adversarial start: 64% / 56% success, 0.359 / 0.285 coverage, versus &le;24% / 0% for every baseline.
+        </p>
+      </div>
+
+      <div class="grid-label">Standard start</div>
+      <div class="grid-sub">rollouts for all five methods, same seed family</div>
+      <div class="method-grid">
+        <div class="method-card">
+          <video src="web/gifs/efp_fail_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (w/ failure)</div><div class="mscore win">64% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/efp_nofail_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (no failure)</div><div class="mscore">0% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/dp_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">Diffusion Policy</div><div class="mscore">24% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/bc_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">BC</div><div class="mscore">0% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/mdn_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">MDN-BC</div><div class="mscore">0% success</div></div>
+        </div>
+      </div>
+
+      <div class="grid-label">Perturb start (adversarial)</div>
+      <div class="grid-sub">agent starts directly above the block</div>
+      <div class="method-grid">
+        <div class="method-card">
+          <video src="web/gifs/efp_fail_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (w/ failure)</div><div class="mscore win">56% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/efp_nofail_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (no failure)</div><div class="mscore">0% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/dp_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">Diffusion Policy</div><div class="mscore">0% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/bc_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">BC</div><div class="mscore">0% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/mdn_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">MDN-BC</div><div class="mscore">0% success</div></div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:40px;">How Sensitive Is This to the Guidance Scale?</h3>
+      <p class="section-intro" style="margin-bottom:12px;">
+        A separate ablation applies entropy guidance on top of plain BC (rather than a diffusion sampler) and
+        sweeps the guidance scale from 0.05 to 5.0.
+      </p>
+      <div class="fig">
+        <img src="web/images/guidance_scale_sweep.png" alt="Guidance scale sweep for entropy-guided BC, showing success collapsing to zero above guidance scale 0.1">
+        <div class="caption">Entropy-guided BC only works in a narrow band around guidance-scale 0.05&ndash;0.1 (coverage 0.31&ndash;0.41, up to 100% success in Standard); above ~0.3 it collapses to 0% in both conditions. The entropy gradient is a knife-edge correction, not a signal that tolerates being over-applied.</div>
+      </div>
+
+      <h3>Does This Replicate on Real Human Demonstrations?</h3>
+      <p class="section-intro" style="margin-bottom:12px;">
+        Everything above uses a hand-scripted synthetic expert. Re-running the same comparison on the official
+        Push-T dataset (206 human-teleoperated episodes) tells a different story:
+      </p>
+      <div class="fig">
+        <img src="web/images/real_demo_results.png" alt="EFP vs Diffusion Policy on the real human-demonstration Push-T dataset, showing nearly all diffusion-based methods at 100% success in both conditions">
+        <div class="caption">On the real dataset, EFP (w/ and w/o failure, w/ and w/o guidance) <i>and</i> plain Diffusion Policy all reach ~100% success in both Standard and Perturb. Only BC (Mean) and MDN-BC fail &mdash; BC's coverage holds up standard (100%) but collapses under perturbation (13%); MDN-BC fails outright.</div>
+      </div>
+      <div class="callout">
+        <span class="kicker">The honest caveat</span>
+        <p>
+          Failure supervision's advantage on synthetic Push-T exists because the hand-scripted expert gave plain
+          Diffusion Policy a narrow, brittle demonstration set to imitate &mdash; DP only scored 24%/0% there.
+          Human demonstrations are naturally more diverse, and standard Diffusion Policy trained on them is
+          <i>already</i> robust to the adversarial start, without any entropy guidance at all. The
+          failure-supervision finding is real, but it's a finding about compensating for weak demonstrations,
+          not a universal improvement over Diffusion Policy.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="whatsnext">
+    <div class="col">
+      <h2>Where the Entropy-Contraction Idea Goes Next</h2>
+      <ul>
+        <li><b>Formal bound on the contraction principle</b> &mdash; when exactly does "lower reachability entropy implies closer to goal" break down? Exp. 2 already shows one failure mode (a gap wide enough that the averaged path is still viable).</li>
+        <li><b>Making the synthetic Push-T finding robust</b> &mdash; the failure-supervision advantage disappears on real human demonstrations (above), because the baseline Diffusion Policy is already strong there. Finding a task where it helps <i>regardless</i> of demonstration quality is the natural next step.</li>
+        <li><b>Table-tennis contact events</b> &mdash; a natural, sharp entropy bottleneck (pre- vs. post-contact) to test the framework on a real robot.</li>
+      </ul>
+      <p style="color:var(--muted); font-size:14px;">A related, code-independent project applies the same entropy-contraction thesis to the denoising process itself &mdash; see <a href="../HeatDissipationPolicy/">Heat Dissipation Policy</a>.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin-bottom:4px;">Code, training scripts, and full result figures: <a href="https://github.com/sakibchowdhury131/EntropicFlowPolicy" target="_blank" rel="noopener">github.com/sakibchowdhury131/EntropicFlowPolicy</a></p>
+    <p style="margin-bottom:10px;">A related project on the same Push-T benchmark: <a href="../HeatDissipationPolicy/">Heat Dissipation Policy</a></p>
+    <a href="../../index.html#projects">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>
