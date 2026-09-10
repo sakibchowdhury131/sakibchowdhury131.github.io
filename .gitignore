@@ -41,3 +41,7 @@ projects/HeatDissipationImageGeneration/Heat_Dissipation_Image_Generation.ipynb
 # outputs (which duplicate the page's figures) locally.
 projects/ConstantEntropyVideoGen/outputs_video/
 projects/ConstantEntropyVideoGen/Constant_Entropy_Image_Flow.ipynb
+
+# Raw/source assets for OpenVLA-OFT-test: only the compressed copies
+# in web/ are used by the page. Keep the extracted originals locally.
+projects/OpenVLA-OFT-test/raw/

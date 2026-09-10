@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenVLA vs OpenVLA-OFT: A Local Benchmark on LIBERO-Spatial and Robosuite</title>
+  <meta name="description" content="Running the stock OpenVLA-7b checkpoint zero-shot in robosuite, and the official LIBERO-Spatial fine-tuned OpenVLA-OFT checkpoint across all ten LIBERO-Spatial tasks, on a local two-GPU workstation with a Franka Emika Panda simulation.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#0f6b76;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+      --bad:#a83a26;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .wide{ max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    /* Hero */
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 820px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 17px; margin: 0 auto 6px; max-width: 760px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    .lede{ max-width: 720px; margin: 0 auto; color:#333; font-size: 17.5px; }
+
+    .metabar{
+      display:flex; flex-wrap:wrap; justify-content:center; gap:8px 22px;
+      max-width: 820px; margin: 18px auto 0;
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+      padding-block:10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12.5px; color: var(--muted);
+    }
+    .metabar b{ color: var(--ink); font-weight:600; }
+
+    .credit-line{
+      max-width: 760px; margin: 20px auto 0; padding: 12px 16px;
+      background: var(--band); border: 1px solid var(--border); border-radius: 8px;
+      font-size: 13.5px; color: var(--muted); text-align:left;
+    }
+
+    /* Bands / sections */
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .section-intro{ text-align:center; max-width: 760px; margin: 0 auto 24px; color: var(--muted); }
+    .eyebrow{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px; letter-spacing:.08em; text-transform:uppercase; color: var(--accent); font-weight:700;
+      display:block; text-align:center; margin-bottom:6px;
+    }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img{ max-width:100%; max-height: 560px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .fig-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items:start; margin: 20px 0; }
+    .fig-row.three{ grid-template-columns: 1fr 1fr 1fr; }
+    .fig-row video, .fig-row img{ max-width:100%; height:auto; border-radius: 8px; border:1px solid var(--border); display:block; background:#000; }
+    .fig-row figcaption{ font-size: 12.5px; color: var(--muted); margin-top: 8px; text-align:center; }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 760px; margin-left:auto; margin-right:auto; }
+
+    /* video reel with badges */
+    .vid-box{ position:relative; background:#000; border-radius: 8px; overflow:hidden; border:1px solid var(--border); }
+    .vid-box video{ display:block; width:100%; height:220px; object-fit:contain; background:#000; }
+    .vid-box .badge{
+      position:absolute; top:8px; right:8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size:10px; font-weight:700; letter-spacing:.04em; padding:3px 7px; border-radius:3px; text-transform:uppercase;
+    }
+    .badge.good{ background: var(--ok); color:#eafff0; }
+    .badge.bad{ background: var(--bad); color:#fff0ee; }
+    .badge.neutral{ background:#2b2b2b; color:#fff; }
+
+    .grid4{ display:grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin: 18px 0; }
+    .grid4 .vid-box video{ height: 150px; }
+    @media (max-width: 720px){ .grid4{ grid-template-columns: repeat(2,1fr); } }
+
+    /* Stat tiles */
+    .stats{ display:grid; grid-template-columns: repeat(4,1fr); gap:1px; background: var(--border); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin: 18px 0; }
+    .stat{ background:#fff; padding: 18px 16px 14px; display:flex; flex-direction:column; gap:4px; text-align:center; }
+    .stat .num{ font-family:"Google Sans","Noto Sans",sans-serif; font-weight:700; font-size: 30px; line-height:1; }
+    .stat .num.good{ color: var(--ok); }
+    .stat .label{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 10.5px; color: var(--muted); letter-spacing:.02em; }
+    @media (max-width: 700px){ .stats{ grid-template-columns: repeat(2,1fr); } }
+
+    table{ width:100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+    th{ background:#fff; font-weight:700; }
+    td.num, th.num{ text-align:right; }
+    .col-oft{ background: color-mix(in srgb, var(--accent) 7%, transparent); }
+    .table-caption{ font-size: 12.5px; color: var(--muted); text-align:center; margin-top: -8px; margin-bottom: 16px; }
+
+    .callout{
+      border:1px solid var(--border); border-left: 4px solid var(--ink); background:#fff;
+      border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0;
+    }
+    .callout .kicker{ font-size: 11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color: var(--muted); display:block; margin-bottom:6px; }
+    .callout p{ margin:0; }
+
+    .diagram-frame{
+      background:#fff; border:1px solid var(--border); border-radius:8px; padding: 20px 16px 12px; box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    }
+    .diagram-frame svg{ display:block; width:100%; height:auto; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+
+    @media (max-width: 620px){
+      .fig-row, .fig-row.three{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#projects">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>OpenVLA vs OpenVLA&#8209;OFT: A Local Benchmark on LIBERO&#8209;Spatial and Robosuite</h1>
+    <div class="authors">Sakib Chowdhury</div>
+    <div class="affiliation">Stevens Institute of Technology</div>
+    <p class="lede">
+      Same 7B vision-language-action backbone, two very different ways of turning a camera frame into a robot
+      command &mdash; run and recorded on this machine. OpenVLA is a 7-billion-parameter VLA trained across
+      ~970k robot episodes from Open X-Embodiment; it acts by autoregressively generating discretized action
+      tokens, one at a time, the same way an LLM writes text. OpenVLA-OFT ("Optimized Fine-Tuning") keeps that
+      same backbone but replaces the output head: it predicts a whole chunk of continuous actions in one
+      parallel forward pass instead of seven sequential ones.
+    </p>
+    <div class="metabar">
+      <span><b>Sim date</b> 2026-04-18</span>
+      <span><b>GPU</b> 2&times; NVIDIA RTX A6000 (48GB)</span>
+      <span><b>Sim engines</b> MuJoCo / robosuite, LIBERO</span>
+      <span><b>Robot</b> Franka Emika Panda</span>
+    </div>
+    <div class="credit-line">
+      Both models are the work of their original authors. OpenVLA: Kim, Pertsch, Karamcheti et al. (2024).
+      OpenVLA-OFT: Kim, Finn, Karamcheti et al., "Fine-Tuning Vision-Language-Action Models: Optimizing
+      Speed and Success" (2025). This page reports the results of running their public checkpoints locally,
+      not a new method.
+    </div>
+    <div class="btn-row" style="margin-top:22px;">
+      <a class="btn" href="https://github.com/sakibchowdhury131/OpenVLA-OFT-test" target="_blank" rel="noopener">Code (GitHub)</a>
+      <a class="btn secondary" href="#results">See the results &darr;</a>
+    </div>
+  </header>
+
+  <section id="how">
+    <div class="col">
+      <span class="eyebrow">01 &middot; How OpenVLA Works</span>
+      <h2>How OpenVLA Turns a Picture Into a Motion</h2>
+      <p>
+        OpenVLA is built on a <code>Prismatic</code> vision-language backbone: a frame from the robot's camera
+        is encoded by two fused vision towers, DINOv2 and SigLIP, and projected into the token stream of a
+        7B-parameter Llama&nbsp;2 language model alongside the tokenized instruction &mdash; e.g.
+        <code>"In: what action should the robot take to pick up the red cube?"</code>
+      </p>
+      <p>
+        The model was never trained to output text back. Instead, its 7-dimensional continuous action &mdash;
+        delta position (x, y, z), delta rotation (roll, pitch, yaw), and gripper open/close &mdash; is
+        discretized into 256 bins per dimension, and each bin is mapped onto one of the least-used tokens in
+        the LLM's existing vocabulary. Producing an action means generating 7 of these tokens the same way the
+        model would generate 7 words: one forward pass through the full 7B network per token, each token
+        conditioned on the ones before it.
+      </p>
+      <p>
+        That autoregressive loop is what makes OpenVLA a strong generalist &mdash; it inherits the flexibility
+        of an LLM decoder &mdash; and also what makes it slow: 7 sequential 7B forward passes for a single
+        timestep of control, then the whole thing repeats for the next camera frame.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="oft">
+    <div class="wide">
+      <span class="eyebrow">02 &middot; What OFT Changes</span>
+      <h2>Parallel Decoding Instead of Seven Sequential Passes</h2>
+      <p style="max-width:70ch; margin-left:auto; margin-right:auto;">
+        OpenVLA-OFT is not a new pretrained model &mdash; it's a fine-tuning recipe applied to the same OpenVLA
+        backbone, aimed squarely at the two things that make the original hard to deploy: it's slow, and
+        discretizing continuous motion into 256 bins throws away precision the base model never gets back.
+      </p>
+
+      <figure style="margin-top:24px;">
+        <div class="diagram-frame">
+          <svg viewBox="0 0 900 380" role="img" aria-label="Diagram comparing OpenVLA's autoregressive action decoding, which loops a 7B forward pass seven times per timestep, against OpenVLA-OFT's parallel decoding, which reads the same image once and writes out a whole chunk of continuous actions." style="color:#1a1a1a; font-family:ui-monospace,monospace;">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+              </marker>
+            </defs>
+
+            <text x="20" y="14" font-size="12" font-weight="700" letter-spacing="0.06em" fill="currentColor">OPENVLA &mdash; AUTOREGRESSIVE, ONE TOKEN AT A TIME</text>
+
+            <rect x="20" y="63" width="140" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="90" y="86" font-size="12" text-anchor="middle" fill="currentColor">CAMERA +</text>
+            <text x="90" y="100" font-size="12" text-anchor="middle" fill="currentColor">INSTRUCTION</text>
+
+            <rect x="205" y="63" width="195" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="302" y="86" font-size="12" text-anchor="middle" fill="currentColor">PRISMATIC VLM</text>
+            <text x="302" y="100" font-size="12" text-anchor="middle" fill="currentColor">+ LLAMA-2 7B</text>
+
+            <rect x="445" y="63" width="110" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="500" y="86" font-size="12" text-anchor="middle" fill="currentColor">ACTION</text>
+            <text x="500" y="100" font-size="12" text-anchor="middle" fill="currentColor">TOKEN</text>
+
+            <rect x="640" y="63" width="180" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="730" y="86" font-size="12" text-anchor="middle" fill="currentColor">1 TIMESTEP</text>
+            <text x="730" y="100" font-size="12" text-anchor="middle" fill="currentColor">OF ACTION (7-DOF)</text>
+
+            <line x1="160" y1="90" x2="202" y2="90" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
+            <line x1="400" y1="90" x2="442" y2="90" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
+            <line x1="555" y1="90" x2="637" y2="90" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
+            <text x="596" y="82" font-size="10.5" text-anchor="middle" fill="currentColor">&times;7 tokens</text>
+
+            <path d="M 500 63 C 500 30, 302 30, 302 61" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
+            <text x="401" y="24" font-size="10.5" text-anchor="middle" fill="currentColor">each token fed back as the next input &mdash; 7 forward passes total</text>
+
+            <text x="20" y="214" font-size="12" font-weight="700" letter-spacing="0.06em" fill="currentColor">OPENVLA&#8209;OFT &mdash; PARALLEL, ONE CHUNK AT A TIME</text>
+
+            <rect x="20" y="263" width="140" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="90" y="286" font-size="12" text-anchor="middle" fill="currentColor">CAMERA +</text>
+            <text x="90" y="300" font-size="12" text-anchor="middle" fill="currentColor">INSTRUCTION</text>
+
+            <rect x="205" y="263" width="195" height="54" rx="6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+            <text x="302" y="286" font-size="12" text-anchor="middle" fill="currentColor">SAME BACKBONE</text>
+            <text x="302" y="300" font-size="12" text-anchor="middle" fill="currentColor">+ FILM CONDITIONING</text>
+
+            <rect x="445" y="263" width="110" height="54" rx="6" fill="#0f6b76" opacity="0.14"/>
+            <rect x="445" y="263" width="110" height="54" rx="6" fill="none" stroke="#0f6b76" stroke-width="1.8"/>
+            <text x="500" y="286" font-size="12" text-anchor="middle" fill="#0f6b76" font-weight="600">CONTINUOUS</text>
+            <text x="500" y="300" font-size="12" text-anchor="middle" fill="#0f6b76" font-weight="600">HEAD</text>
+
+            <rect x="640" y="263" width="180" height="54" rx="6" fill="#0f6b76" opacity="0.14"/>
+            <rect x="640" y="263" width="180" height="54" rx="6" fill="none" stroke="#0f6b76" stroke-width="1.8"/>
+            <text x="730" y="286" font-size="12" text-anchor="middle" fill="#0f6b76" font-weight="600">ACTION CHUNK</text>
+            <text x="730" y="300" font-size="12" text-anchor="middle" fill="#0f6b76" font-weight="600">(K TIMESTEPS)</text>
+
+            <line x1="160" y1="290" x2="202" y2="290" stroke="currentColor" stroke-width="1.4" marker-end="url(#arrow)"/>
+            <line x1="400" y1="290" x2="442" y2="290" stroke="#0f6b76" stroke-width="1.8" marker-end="url(#arrow)"/>
+            <line x1="555" y1="290" x2="637" y2="290" stroke="#0f6b76" stroke-width="1.8" marker-end="url(#arrow)"/>
+            <text x="478" y="282" font-size="10.5" text-anchor="middle" fill="#0f6b76">one pass, no feedback</text>
+            <text x="730" y="335" font-size="10.5" text-anchor="middle" fill="currentColor">executed open-loop for K steps before the next camera query</text>
+          </svg>
+        </div>
+        <div class="caption" style="text-align:center;">The mechanism that changes between the two: OpenVLA feeds each predicted action token back in as input for the next, seven times per timestep; OFT reads the same image once and writes out several timesteps of continuous action in a single pass.</div>
+      </figure>
+
+      <div style="overflow-x:auto; margin-top:26px;">
+        <table>
+          <thead><tr><th>Property</th><th>OpenVLA</th><th class="col-oft">OpenVLA-OFT</th></tr></thead>
+          <tbody>
+            <tr><td>Action decoding</td><td>Autoregressive &mdash; 7 tokens, sequentially</td><td class="col-oft">Parallel &mdash; one non-causal forward pass</td></tr>
+            <tr><td>Action representation</td><td>256-bin discretized tokens</td><td class="col-oft">Continuous, via L1 regression (or diffusion) head</td></tr>
+            <tr><td>Actions per query</td><td>1 timestep</td><td class="col-oft">A chunk of several future timesteps at once</td></tr>
+            <tr><td>Language grounding</td><td>Token-level cross-attention only</td><td class="col-oft">+ FiLM conditioning injected into vision features</td></tr>
+            <tr><td>Ships zero-shot?</td><td>Yes &mdash; generalist across many robots</td><td class="col-oft">No &mdash; needs fine-tuning per robot/task setup</td></tr>
+            <tr><td>Typical control rate</td><td>Roughly a few Hz</td><td class="col-oft">Reported ~25&times; higher throughput; real-time on real arms</td></tr>
+            <tr><td>LIBERO avg. success*</td><td>Autoregressive fine-tune, mid-70s%</td><td class="col-oft">~97% across all four LIBERO suites</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><p><code>*</code> Figures as reported in the OpenVLA and OpenVLA-OFT papers, for context &mdash; not this run. This run's own numbers are in the Results section below.</p></div>
+    </div>
+  </section>
+
+  <section id="method">
+    <div class="col">
+      <span class="eyebrow">03 &middot; Setup</span>
+      <h2>What Actually Ran, Here</h2>
+      <p style="text-align:center; max-width:70ch; margin-left:auto; margin-right:auto;">Two separate setups on this machine, evaluating the two ends of the table above:</p>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th></th><th>OpenVLA (zero-shot)</th><th class="col-oft">OpenVLA-OFT (fine-tuned)</th></tr></thead>
+          <tbody>
+            <tr><td>Checkpoint</td><td><code>openvla/openvla-7b</code></td><td class="col-oft"><code>moojink/openvla-7b-oft-finetuned-libero-spatial</code></td></tr>
+            <tr><td>Sim / task</td><td>robosuite &mdash; <code>Lift</code> (pick up the red cube)</td><td class="col-oft">LIBERO-Spatial &mdash; 10 pick-and-place tasks</td></tr>
+            <tr><td>Action un-normalization</td><td><code>bridge_orig</code> stats (nearest available match &mdash; not sim-specific)</td><td class="col-oft">Trained specifically for this suite</td></tr>
+            <tr><td>Episodes run</td><td class="num">4 (this reel)</td><td class="col-oft num">30 (all 10 tasks &times; 3)</td></tr>
+            <tr><td>Project</td><td><code>agenticVLA/demo.py</code></td><td class="col-oft"><code>openvla-oft / run_libero_eval.py</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <span class="kicker">Not an apples-to-apples benchmark</span>
+        <p>These are two different simulators, two different task families, and OpenVLA never saw LIBERO or robosuite during training &mdash; it's improvising with the closest action statistics available (BridgeV2). The comparison below is honest about that: it's "generalist zero-shot" vs. "specialist fine-tuned," which is exactly the trade-off Section 2 describes, not a controlled ablation on one task.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="results">
+    <div class="wide">
+      <span class="eyebrow">04 &middot; Results</span>
+      <h2>Three Points on the Same Curve</h2>
+
+      <div class="stats">
+        <div class="stat"><div class="num">0/4</div><div class="label">RANDOM POLICY &middot; LIFT</div></div>
+        <div class="stat"><div class="num">0/4</div><div class="label">OPENVLA ZERO-SHOT &middot; LIFT</div></div>
+        <div class="stat"><div class="num good">29/30</div><div class="label">OPENVLA-OFT &middot; LIBERO-SPATIAL</div></div>
+        <div class="stat"><div class="num good">96.7%</div><div class="label">OFT OVERALL SUCCESS RATE</div></div>
+      </div>
+
+      <p style="text-align:center; max-width:70ch; margin:22px auto 0;">No policy, a generalist policy outside its depth, and a policy fine-tuned for exactly this task:</p>
+
+      <div class="fig-row three" style="margin-top:16px;">
+        <figure>
+          <div class="vid-box"><span class="badge neutral">baseline</span>
+            <video src="web/videos/random_baseline.mp4" poster="web/videos/random_baseline_poster.jpg" autoplay loop muted playsinline></video>
+          </div>
+          <figcaption><b>Random actions</b> &mdash; sanity-check of the sim pipeline, no model. Franka arm flails; cube untouched.</figcaption>
+        </figure>
+        <figure>
+          <div class="vid-box"><span class="badge bad">stalls</span>
+            <video src="web/videos/openvla_zeroshot_stitched.mp4" poster="web/videos/openvla_zeroshot_stitched_poster.jpg" autoplay loop muted playsinline></video>
+          </div>
+          <figcaption><b>OpenVLA-7b, zero-shot</b> &mdash; frontview / sideview / agentview, stitched. Trained on real BridgeV2/RT-X footage, not this sim; reaches, doesn't close the loop.</figcaption>
+        </figure>
+        <figure>
+          <div class="vid-box"><span class="badge good">succeeds</span>
+            <video src="web/videos/oft_compiled_reel.mp4" poster="web/videos/oft_compiled_reel_poster.jpg" autoplay loop muted playsinline></video>
+          </div>
+          <figcaption><b>OpenVLA-OFT, fine-tuned</b> &mdash; compiled reel from the LIBERO-Spatial eval below. 96.7% success over 30 episodes.</figcaption>
+        </figure>
+      </div>
+
+      <div class="fig" style="margin-top:34px;">
+        <img src="web/images/lift_env_angles.png" alt="Five render angles of the robosuite Lift task: agentview, two over-shoulder views, a top-down view, and a low profile view, showing a Franka Panda arm over a table with a small red cube.">
+        <div class="caption">What the simulator actually looks like: five render angles of the robosuite <code>Lift</code> environment used for the OpenVLA zero-shot runs above. Only <code>agentview</code> is fed to the model; the rest are recorded for human inspection.</div>
+      </div>
+
+      <h3 style="text-align:center; margin-top:38px;">OpenVLA-OFT Across the LIBERO-Spatial Task Set</h3>
+      <p style="text-align:center; max-width:70ch; margin:0 auto 16px;">Four individual episodes pulled from the full 30-episode run, including the one failure recorded &mdash; nothing cherry-picked out.</p>
+      <div class="grid4">
+        <figure>
+          <div class="vid-box"><span class="badge good">success</span><video src="web/videos/oft_ep01_success.mp4" autoplay loop muted playsinline></video></div>
+          <figcaption>Ep. 1 &mdash; bowl between plate &amp; ramekin</figcaption>
+        </figure>
+        <figure>
+          <div class="vid-box"><span class="badge good">success</span><video src="web/videos/oft_ep07_success.mp4" autoplay loop muted playsinline></video></div>
+          <figcaption>Ep. 7 &mdash; bowl from table center</figcaption>
+        </figure>
+        <figure>
+          <div class="vid-box"><span class="badge good">success</span><video src="web/videos/oft_ep13_success.mp4" autoplay loop muted playsinline></video></div>
+          <figcaption>Ep. 13 &mdash; bowl in top drawer of cabinet</figcaption>
+        </figure>
+        <figure>
+          <div class="vid-box"><span class="badge bad">fail</span><video src="web/videos/oft_ep16_fail.mp4" autoplay loop muted playsinline></video></div>
+          <figcaption>Ep. 16 &mdash; bowl on the ramekin, the one miss</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="takeaways">
+    <div class="col">
+      <span class="eyebrow">05 &middot; Reading the Result Correctly</span>
+      <h2>What This Does and Doesn't Show</h2>
+      <ul>
+        <li><b>This is not "OFT is 97% better than OpenVLA."</b> It's a specialist fine-tuned for LIBERO-Spatial against a generalist checkpoint that has never seen either simulator. Fine-tune OpenVLA itself on LIBERO and the gap narrows a lot &mdash; the OFT paper reports the autoregressive fine-tune lands in the mid-70s% on the same benchmark, still well behind OFT's ~97%, but nowhere near zero.</li>
+        <li><b>The zero-shot failure is a domain-gap story, not a capability story.</b> OpenVLA is reaching for the cube; the un-normalization statistics come from real BridgeV2 demonstrations, and MuJoCo's rendering, physics, and camera geometry don't match what those statistics were tuned for.</li>
+        <li><b>OFT's real win in the source paper is speed, not just accuracy</b> &mdash; parallel decoding plus action chunking is what let a fine-tuned OpenVLA run fast enough for real-time control on a physical ALOHA bimanual rig, something the token-at-a-time original could not keep up with.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin-bottom:4px;">Code, eval logs &amp; rollouts: <a href="https://github.com/sakibchowdhury131/OpenVLA-OFT-test" target="_blank" rel="noopener">sakibchowdhury131/OpenVLA-OFT-test</a></p>
+    <p style="margin-bottom:4px;">Upstream: <a href="https://github.com/moojink/openvla-oft" target="_blank" rel="noopener">moojink/openvla-oft</a></p>
+    <p style="margin-bottom:10px;">Checkpoint: <a href="https://huggingface.co/moojink/openvla-7b-oft-finetuned-libero-spatial" target="_blank" rel="noopener">HF &middot; openvla-7b-oft-finetuned-libero-spatial</a></p>
+    <a href="../../index.html#projects">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>
