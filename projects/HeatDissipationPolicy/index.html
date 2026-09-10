@@ -333,7 +333,7 @@
       <ul>
         <li><b>Heat dissipation image generation</b> &mdash; the direct 2D analogue: blur an image with the heat kernel instead of adding Gaussian noise, then learn to reverse it. Closely related to Cold Diffusion (Bansal et al., 2022) and Blurring Diffusion Models (Hoogeboom &amp; Salimans, 2023) &mdash; now its own dedicated write-up, <a href="../HeatDissipationImageGeneration/">Heat Dissipation Image Generation</a>.</li>
         <li><b>Entropy-conserving generation</b> &mdash; a different idea: instead of traversing an entropy gradient, move <i>along</i> a constant-entropy manifold. A phase-shuffled image has identical spectral entropy to its source but no structure; a model can be trained to reorganize shuffled &rarr; coherent while conserving entropy exactly. Unexplored in the literature as far as I've found.</li>
-        <li><b>Entropy conservation for video</b> &mdash; consecutive frames have near-constant entropy by nature, which makes the constant-entropy idea a plausible fit for temporal consistency in video generation.</li>
+        <li><b>Entropy conservation for video</b> &mdash; consecutive frames have near-constant entropy by nature, which makes the constant-entropy idea a plausible fit for temporal consistency in video generation &mdash; tested in <a href="../ConstantEntropyVideoGen/">Constant-Entropy Video Generation</a>, including where it does and doesn't hold up.</li>
       </ul>
     </div>
   </section>
@@ -341,7 +341,8 @@
   <footer>
     <p style="margin-bottom:4px;">Code, training scripts, and full result figures: <a href="https://github.com/sakibchowdhury131/HeatDissipationPolicy" target="_blank" rel="noopener">github.com/sakibchowdhury131/HeatDissipationPolicy</a></p>
     <p style="margin-bottom:4px;">A related, code-independent project on the same Push-T benchmark: <a href="../EntropicFlowPolicy/">Entropic Flow Policy</a></p>
-    <p style="margin-bottom:10px;">The same idea applied to pixels instead of actions: <a href="../HeatDissipationImageGeneration/">Heat Dissipation Image Generation</a></p>
+    <p style="margin-bottom:4px;">The same idea applied to pixels instead of actions: <a href="../HeatDissipationImageGeneration/">Heat Dissipation Image Generation</a></p>
+    <p style="margin-bottom:10px;">A conservation principle tested on video instead: <a href="../ConstantEntropyVideoGen/">Constant-Entropy Video Generation</a></p>
     <a href="../../index.html#projects">&larr; Back to sakibchowdhury131.github.io</a>
   </footer>
 </body>

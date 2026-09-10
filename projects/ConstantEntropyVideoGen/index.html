@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Constant-Entropy Video Generation: Predicting Frames by Conserving Spectral Entropy</title>
+  <meta name="description" content="Testing the hypothesis that consecutive video frames have near-constant spectral entropy, and training a next-frame flow model with an explicit entropy-conservation loss. Includes the hypothesis test, training curves, autoregressive rollouts, and an honest look at long-horizon entropy drift.">
+  <link rel="shortcut icon" href="../../img/favicon.png" />
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500,700|Noto+Sans:400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#ffffff;
+      --band:#f6f7f9;
+      --ink:#1a1a1a;
+      --muted:#6b7280;
+      --accent:#0a7d6b;
+      --border:#e5e7eb;
+      --ok:#0a7d3c;
+      --warn:#b3480a;
+    }
+    *{ box-sizing: border-box; }
+    html{ scroll-behavior: smooth; }
+    body{
+      margin:0; background: var(--bg); color: var(--ink);
+      font: 17px/1.7 "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    a{ color: var(--accent); text-decoration: none; }
+    a:hover{ text-decoration: underline; }
+
+    .col{ max-width: 860px; margin: 0 auto; padding: 0 24px; }
+    .wide{ max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+    .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 24px 0; }
+
+    /* Hero */
+    .hero{ text-align:center; padding: 28px 24px 8px; }
+    .hero h1{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: clamp(24px, 3.6vw, 34px); line-height: 1.3;
+      max-width: 820px; margin: 0 auto 20px;
+    }
+    .authors{ font-size: 17px; margin: 0 auto 6px; max-width: 760px; }
+    .authors a{ color: var(--ink); font-weight: 500; }
+    .authors a:hover{ color: var(--accent); }
+    .affiliation{ color: var(--muted); font-size: 15px; margin-bottom: 16px; }
+    .venue-badge{
+      display:inline-block; background: var(--ink); color:#fff; font-size: 13px; font-weight:700;
+      letter-spacing: .03em; padding: 5px 14px; border-radius: 999px; margin-bottom: 22px;
+    }
+    .btn-row{ display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom: 8px; }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+      padding: 10px 20px; border-radius: 999px; font-size: 14.5px; font-weight:600;
+    }
+    .btn:hover{ background: var(--accent); text-decoration:none; }
+    .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
+    .btn.secondary:hover{ background: var(--band); color:var(--ink); }
+
+    .lede{ max-width: 720px; margin: 0 auto; color:#333; font-size: 17.5px; }
+
+    .eq-block{
+      margin: 22px auto 0; padding: 14px 18px; background: var(--band); border: 1px solid var(--border);
+      border-radius: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14.5px; display:inline-block; max-width: 100%; overflow-x:auto; text-align:left;
+    }
+    .eq-block .cap{ display:block; margin-top:8px; font-size:12px; color: var(--muted); font-family: "Noto Sans", sans-serif; }
+
+    /* Stat row */
+    .stat-row{ display:grid; grid-template-columns: repeat(3,1fr); gap:14px; max-width: 900px; margin: 26px auto 0; }
+    .stat{ background:#fff; border:1px solid var(--border); border-radius:12px; padding: 16px 16px 14px; }
+    .stat .num{ font-family:"Google Sans","Noto Sans",sans-serif; font-weight:700; font-size: 1.9rem; line-height:1; color: var(--accent); }
+    .stat .num.warn{ color: var(--warn); }
+    .stat .lbl{ font-size:12.5px; color: var(--muted); margin-top:6px; }
+    @media (max-width: 700px){ .stat-row{ grid-template-columns: 1fr; } }
+
+    /* Bands / sections */
+    .band{ background: var(--band); }
+    section{ padding: 46px 0; }
+    section h2{
+      font-family: "Google Sans", "Noto Sans", system-ui, sans-serif;
+      font-weight: 700; font-size: 24px; text-align:center; margin: 0 0 20px;
+    }
+    section h3{ font-size: 18.5px; font-weight:700; margin: 28px 0 10px; }
+    section p{ margin: 0 0 14px; color:#2b2b2b; }
+    section ul{ margin: 0 0 14px; padding-left: 22px; color:#2b2b2b; }
+    section li{ margin: 6px 0; }
+
+    .section-intro{ text-align:center; max-width: 760px; margin: 0 auto 24px; color: var(--muted); }
+
+    .fig{ margin: 20px 0; text-align:center; }
+    .fig img{ max-width:100%; max-height: 560px; height:auto; border-radius: 8px; border:1px solid var(--border); }
+    .fig-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items:start; margin: 20px 0; }
+    .fig-row.three{ grid-template-columns: 1fr 1fr 1fr; }
+    .fig-row img{ max-width:100%; max-height: 480px; height:auto; border-radius: 8px; border:1px solid var(--border); display:block; }
+    .fig-row figcaption{ font-size: 12.5px; color: var(--muted); margin-top: 8px; text-align:center; }
+    .caption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; text-align:left; max-width: 760px; margin-left:auto; margin-right:auto; }
+
+    .gif-showcase{ text-align:center; margin: 24px 0; }
+    .gif-showcase img{ width: 100%; max-width: 360px; border-radius: 8px; border:1px solid var(--border); image-rendering: pixelated; background:#000; }
+
+    table{ width:100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+    th, td{ border: 1px solid var(--border); padding: 8px 10px; text-align: center; }
+    th{ background:#fff; font-weight:700; }
+    td:first-child, th:first-child{ text-align:left; }
+    td.num, th.num{ text-align:right; }
+    .win{ color: var(--ok); font-weight: 700; }
+    .muted-cell{ color: var(--muted); }
+    .table-caption{ font-size: 12.5px; color: var(--muted); text-align:center; margin-top: -8px; margin-bottom: 16px; }
+
+    .callout{
+      border:1px solid var(--border); border-left: 4px solid var(--ink); background:#fff;
+      border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0;
+    }
+    .callout .kicker{ font-size: 11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color: var(--muted); display:block; margin-bottom:6px; }
+    .callout p{ margin:0; }
+    .callout p + p{ margin-top: 10px; }
+
+    code{ background:#f0f1f3; border:1px solid var(--border); padding:2px 6px; border-radius:5px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: .92em; }
+
+    footer{ text-align:center; padding: 34px 24px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--border); margin-top: 10px; }
+
+    @media (max-width: 620px){
+      .fig-row, .fig-row.three{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="backlink" href="../../index.html#projects">&larr; sakibchowdhury131.github.io</a>
+
+  <header class="hero">
+    <h1>Constant-Entropy Video Generation: Predicting Frames by Conserving Spectral Entropy</h1>
+    <div class="authors">Sakib Chowdhury</div>
+    <div class="affiliation">Stevens Institute of Technology</div>
+    <div class="venue-badge">Independent Research &middot; Unpublished</div>
+    <p class="lede">
+      Consecutive video frames barely change in spectral entropy, even though the pixels themselves change a
+      lot. This project tests that hypothesis directly, then trains a next-frame model whose loss explicitly
+      penalizes any entropy drift between the input frame and its prediction &mdash; treating frame-to-frame
+      prediction as a move <i>along</i> a constant-entropy manifold rather than an unconstrained regression.
+    </p>
+    <div class="eq-block">
+      H(x) = &minus;&sum;<sub>k</sub> P(k) log P(k) &nbsp;&nbsp;where&nbsp;&nbsp; P(k) = |&#251;(k)|&sup2; / &sum;|&#251;(k)|&sup2;
+      <span class="cap">Spectral entropy of a frame: the Shannon entropy of its normalized Fourier power spectrum</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="num">1.22%</div>
+        <div class="lbl">Mean relative change in spectral entropy between consecutive real frames (max 14.0%) &mdash; the hypothesis this project set out to test</div>
+      </div>
+      <div class="stat">
+        <div class="num">4.17M</div>
+        <div class="lbl">Parameters in the FlowNet next-frame predictor, trained on 9,500 real consecutive-frame pairs</div>
+      </div>
+      <div class="stat">
+        <div class="num warn">30.2%</div>
+        <div class="lbl">Entropy drift after 40 autoregressive rollout steps, despite training with an explicit entropy-conservation loss</div>
+      </div>
+    </div>
+    <div class="btn-row" style="margin-top:22px;">
+      <a class="btn" href="https://github.com/sakibchowdhury131/ConstantEntropyVideoGen" target="_blank" rel="noopener">Code (GitHub)</a>
+      <a class="btn secondary" href="#rollout">See the rollout &darr;</a>
+    </div>
+  </header>
+
+  <section id="hypothesis">
+    <div class="col">
+      <h2>The Hypothesis: Frames Change a Lot, Entropy Barely Moves</h2>
+      <p>
+        A synthetic dataset of 500 short videos (20 frames each, moving shapes on a drifting-color background)
+        gives full control over ground truth: every frame-to-frame change is smooth motion, with no scene cuts
+        or lighting changes that would genuinely destroy or create information. Three entropy measures were
+        computed on every consecutive frame pair &mdash; spectral entropy (Shannon entropy of the Fourier power
+        spectrum), pixel-histogram entropy, and spatial variance as a cheap entropy proxy.
+      </p>
+      <table>
+        <thead><tr><th>Measure</th><th class="num">Mean rel. change</th><th class="num">Std</th><th class="num">Max</th></tr></thead>
+        <tbody>
+          <tr><td>Spectral entropy</td><td class="num win">1.22%</td><td class="num">1.43%</td><td class="num">14.00%</td></tr>
+          <tr><td>Pixel-histogram entropy</td><td class="num">2.32%</td><td class="num">3.17%</td><td class="num">74.36%</td></tr>
+          <tr><td>Spatial variance</td><td class="num">2.00%</td><td class="num">1.77%</td><td class="num">14.25%</td></tr>
+        </tbody>
+      </table>
+      <div class="table-caption">Relative change |H(f<sub>t+1</sub>) &minus; H(f<sub>t</sub>)| / H(f<sub>t</sub>), aggregated over 20 batches of 64 real consecutive-frame pairs. Spectral entropy is both the smallest and the most consistent of the three &mdash; the measure this project builds on.</div>
+
+      <div class="fig">
+        <img src="web/images/entropy_over_frames.png" alt="Spectral entropy plotted across the 20 frames of a single synthetic video, showing a gentle downward drift with an 11.39% relative range">
+        <div class="caption">Spectral entropy across one full 20-frame sequence. It isn't perfectly flat &mdash; there's a gentle downward trend as shapes drift and overlap changes &mdash; but the total range (11.4% peak-to-trough over 20 frames) is small next to how much the pixels themselves change, consistent with the near-conservation hypothesis.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="model">
+    <div class="wide">
+      <h2>FlowNet: Predicting a Delta, Not a New Frame</h2>
+      <p>
+        Rather than predicting frame t+1 directly, the network predicts a flow field v such that
+        u<sub>t+1</sub> = u<sub>t</sub> + v(u<sub>t</sub>) &mdash; a U-Net-style encoder/decoder with residual
+        blocks, whose final output layer is zero-initialized so the network starts out as the identity map
+        (predict no change at all) and has to earn every pixel of motion during training. Training combines two
+        losses: standard reconstruction MSE against the true next frame, plus an entropy-conservation term that
+        penalizes any difference between the spectral entropy of the input frame and the spectral entropy of the
+        prediction.
+      </p>
+      <div class="eq-block" style="display:block; max-width:none;">
+        L = &Vert; u<sub>t</sub> + v(u<sub>t</sub>) &minus; u<sub>t+1</sub> &Vert;&sup2;
+        &nbsp;+&nbsp; &lambda; &middot; ( H(u<sub>t</sub>+v(u<sub>t</sub>)) &minus; H(u<sub>t</sub>) )&sup2;
+        <span class="cap">Reconstruction loss plus an entropy-conservation penalty, &lambda; = 1.0</span>
+      </div>
+      <table>
+        <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Dataset</td><td>500 synthetic 20-frame videos, 64&times;64, moving shapes &mdash; 9,500 consecutive-frame pairs</td></tr>
+          <tr><td>Model size</td><td>4,171,331 parameters</td></tr>
+          <tr><td>Optimizer</td><td>AdamW, lr 2e-4, cosine annealed, gradient-clipped at 1.0</td></tr>
+          <tr><td>Training</td><td>100 epochs, batch size 32</td></tr>
+          <tr><td>Loss weight</td><td>&lambda; = 1.0 for the entropy-conservation term</td></tr>
+        </tbody>
+      </table>
+      <div class="fig">
+        <img src="web/images/loss_curves.png" alt="Training loss curves: reconstruction and total loss decreasing smoothly on a log scale, and entropy-conservation loss decreasing with more noise over 100 epochs">
+        <div class="caption">Left: reconstruction loss falls from 0.00399 to 0.00033 over 100 epochs. Right: the entropy-conservation loss falls too (0.000202 &rarr; 0.000013), though noisily &mdash; consistent with it being a much smaller, secondary term competing with the dominant reconstruction objective.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rollout">
+    <div class="col">
+      <h2>From Frozen to Tracking: Rollout Over Training</h2>
+      <p>
+        Every 20 epochs, the model performs a 16-step autoregressive rollout &mdash; feeding its own prediction
+        back in as the next input &mdash; starting from the first real frame of a held-out sequence.
+      </p>
+      <div class="fig-row">
+        <figure>
+          <img src="web/images/rollout_epoch_0001.png" alt="Rollout comparison at epoch 1: predicted frames barely move and accumulate color smearing">
+          <figcaption>Epoch 1 &mdash; barely trained. The near-identity initialization keeps shapes roughly in place instead of tracking their motion, and color artifacts accumulate step by step.</figcaption>
+        </figure>
+        <figure>
+          <img src="web/images/rollout_epoch_0100.png" alt="Rollout comparison at epoch 100: predicted frames track the ground-truth motion closely, with growing but modest visual artifacts">
+          <figcaption>Epoch 100 &mdash; fully trained. The predicted rollout (bottom) tracks the ground truth (top) motion closely for all 16 steps, though a faint trailing smear and a color halo build up around each shape as steps accumulate.</figcaption>
+        </figure>
+      </div>
+
+      <h3>But Entropy Still Drifts, Even Here</h3>
+      <p style="max-width:70ch;">
+        The entropy-conservation loss shrinks the entropy gap on individual training pairs, but it doesn't
+        prevent compounding drift once the model's own predictions become its next input.
+      </p>
+      <div class="fig">
+        <img src="web/images/entropy_comparison_0100.png" alt="Spectral entropy of ground-truth vs predicted rollout over 16 steps at epoch 100, showing predicted entropy climbing steadily above ground truth despite the entropy-conservation loss">
+        <div class="caption">Ground-truth entropy (blue) drifts gently downward across this 16-step sequence, matching the single-video plot above. The model's own rollout (red) instead climbs steadily upward, diverging further from ground truth with every step &mdash; the entropy loss constrains single-step predictions, not multi-step autoregressive behavior.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="long-rollout">
+    <div class="wide">
+      <h2>The Long Rollout: 40 Steps, 30% Entropy Drift</h2>
+      <p class="section-intro" style="max-width:70ch;">
+        Pushed out to 40 autoregressive steps &mdash; twice the length of any training sequence &mdash; the
+        model keeps both shapes recognizable and roughly on their correct trajectories, but visible noise and
+        texture accumulate around their edges.
+      </p>
+
+      <div class="gif-showcase">
+        <img src="web/gifs/long_rollout.gif" alt="Animated 40-step autoregressive rollout showing a triangle and circle moving while accumulating visual noise and texture around their edges">
+      </div>
+
+      <div class="fig">
+        <img src="web/images/long_rollout.png" alt="Sampled frames from a 40-step autoregressive rollout, showing shapes tracking their motion while accumulating a jittery, high-frequency texture">
+        <div class="caption">16 sampled frames spanning the full 40-step rollout. Shape position and identity survive the whole way, but a jittery, high-frequency texture visibly accumulates &mdash; exactly the kind of change that spectral entropy is built to detect.</div>
+      </div>
+
+      <div class="fig">
+        <img src="web/images/entropy_long_rollout.png" alt="Spectral entropy over 40 rollout steps, climbing steadily from 0.594 to 0.774, a 30.23% drift">
+        <div class="caption">Spectral entropy climbs from 0.594 to 0.774 over 40 steps &mdash; a 30.23% drift, and visibly correlated with the accumulating texture noise in the frames above.</div>
+      </div>
+
+      <div class="callout">
+        <span class="kicker">The honest takeaway</span>
+        <p>
+          The core hypothesis held up: real consecutive frames really do have near-constant spectral entropy
+          (~1.2% mean frame-to-frame change), and training with an explicit entropy-conservation loss produces a
+          model that tracks motion far better than one trained on reconstruction alone. But conserving entropy
+          on individual training pairs is a different thing from conserving it across an autoregressive chain of
+          the model's own predictions &mdash; small per-step errors compound into a fairly large drift after
+          enough steps, the same exposure-bias problem that affects autoregressive next-frame prediction in
+          general. An entropy penalty computed on single steps doesn't automatically buy long-horizon stability.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin-bottom:4px;">Code, the full notebook, and all output figures: <a href="https://github.com/sakibchowdhury131/ConstantEntropyVideoGen" target="_blank" rel="noopener">github.com/sakibchowdhury131/ConstantEntropyVideoGen</a></p>
+    <p style="margin-bottom:10px;">Related projects applying a conservation principle as the generative mechanism: <a href="../HeatDissipationImageGeneration/">Heat Dissipation Image Generation</a> &middot; <a href="../HeatDissipationPolicy/">Heat Dissipation Policy</a></p>
+    <a href="../../index.html#projects">&larr; Back to sakibchowdhury131.github.io</a>
+  </footer>
+</body>
+</html>

@@ -35,3 +35,9 @@ projects/HeatDissipationPolicy/raw/
 # raw outputs (which duplicate the page's figures) locally.
 projects/HeatDissipationImageGeneration/outputs/
 projects/HeatDissipationImageGeneration/Heat_Dissipation_Image_Generation.ipynb
+
+# Raw/source assets for ConstantEntropyVideoGen: only the compressed
+# copies in web/ are used by the page. Keep the notebook and raw
+# outputs (which duplicate the page's figures) locally.
+projects/ConstantEntropyVideoGen/outputs_video/
+projects/ConstantEntropyVideoGen/Constant_Entropy_Image_Flow.ipynb
