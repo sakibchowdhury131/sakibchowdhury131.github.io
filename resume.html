@@ -1,89 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title> Sakib Chowdhury |  PhD Student in Robotics | Resume</title>
-	<meta name="description" content="Sakib Chowdhury is currently doing his PhD in robotics at Stevens Institute of Technology. He has also been working as a Research Engineer (AI) at Celloscope since December 2021. Sakib Chowdhury has completed my bachelors at the Department of Electrical and Electronic Engineering in Bangladesh University of Engineering and Technology (BUET). Sakib Chowdhury is also a part-time research assistant at Department of Computer Science, BUET.
-	Sakib Chowdhury's research interest lies in the intersection of Cyber Physical Systems, Robotics and Machine Learning. Designing multipurpose robots, advancing them with vision based navigation, instruction processing through natural language and multimodal sensor fusion in single or multi-agent systems are some of the areas of Sakib's interest.Office
-	Phone: +12014486568
-	Email: sakibchowdhury131@gmail.com
-	Address: Jersey City, New Jersey">
-	
-  
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sakib Chowdhury | PhD Student in Robotics | Resume</title>
+    <meta name="description" content="Resume of Sakib Chowdhury, PhD student in Robotics at Stevens Institute of Technology, working on learning-based motion planning and control for robotic manipulators.">
+    <meta name="author" content="Sakib Chowdhury">
+    <link rel="stylesheet" href="css/font-awesome.min.css" />
+    <link rel="shortcut icon" href="img/favicon.png" />
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700|Lato:400,700,900&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --bg:#ffffff;
+            --ink:#111827;
+            --muted:#6b7280;
+            --accent:#0b5fff;
+            --border:#e5e7eb;
+            --shadow: 0 6px 22px rgba(0,0,0,0.06);
+            --radius: 10px;
+        }
+        *{ box-sizing: border-box; }
+        html{ scroll-behavior: smooth; }
+        body{
+            margin:0; background: var(--bg); color: var(--ink);
+            font: 14.5px/1.6 Lato, system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+        a{ color: var(--accent); text-decoration: none; }
+        a:hover{ text-decoration: underline; }
+        .wrap{ max-width: 900px; margin: 0 auto; padding: 0 20px 40px; }
+
+        /* Nav */
+        .site-nav{ position: sticky; top:0; z-index: 100; background: rgba(255,255,255,.92); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); }
+        .site-nav ul{ max-width: 900px; margin: 0 auto; padding: 10px 20px; list-style:none; display:flex; flex-wrap: wrap; gap: 18px; }
+        .site-nav a{ color: var(--ink); font-size: 12.5px; font-weight: 700; letter-spacing:.03em; text-transform: uppercase; }
+        .site-nav a:hover{ color: var(--accent); text-decoration:none; }
+
+        .backlink{ display:block; font-size: 13px; color: var(--muted); padding: 18px 0 0; }
+
+        header.page-head{ padding: 20px 0 16px; display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:12px; }
+        header.page-head h1{ font-family: "Playfair Display", Georgia, serif; font-size: 32px; margin: 0; }
+        .btn{
+            display:inline-flex; align-items:center; gap:8px; background: var(--ink); color:#fff;
+            padding: 9px 18px; border-radius: 999px; font-size: 13.5px; font-weight:700;
+        }
+        .btn:hover{ background: var(--accent); text-decoration:none; }
+
+        .pdf-frame{
+            width:100%; height: 82vh; min-height: 500px;
+            border:1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+            display:block; background: #f6f7f9;
+        }
+        .pdf-fallback{ font-size: 13.5px; color: var(--muted); margin-top: 10px; }
+
+        footer{ border-top: 1px solid var(--border); margin-top: 28px; padding: 16px 0; text-align:center; }
+        footer .addr{ color: var(--muted); font-size: 12.5px; margin-bottom: 10px; }
+        footer .social a{ color: var(--ink); font-size: 18px; margin: 0 9px; }
+        footer .social a:hover{ color: var(--accent); }
+
+        @media (max-width: 640px){
+            header.page-head{ flex-direction:column; align-items:flex-start; }
+            .pdf-frame{ height: 70vh; }
+        }
+    </style>
 </head>
 <body>
-    	<!-- Navigation -->
-	<div class="main-nav">
-		<div class="container">
-			<header class="group top-nav">
-				<div class="navigation-toggle" data-tools="navigation-toggle" data-target="#navbar-1">
-				    <span class="logo">Menu</span>
-				</div>
-			    <nav id="navbar-1" class="navbar item-nav">
-				    <ul>
-				        <li><a href="index.html#about">About</a></li>
-						<li><a href="index.html#research">Research</a></li>
-				        <li><a href="index.html#projects">Projects</a></li>
-						<li><a href="index.html#publications">Publications</a></li>
-						<li><a href="index.html#contact">Contact</a></li>
-				        <!--<li><a href="#skills">Skills</a></li>-->
-				    </ul>
-				</nav>
-			</header>
-		</div>
-	</div>
 
-    
-    <div>
-        <div>
+    <nav class="site-nav">
+        <ul>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#research">Research</a></li>
+            <li><a href="index.html#projects">Projects</a></li>
+            <li><a href="index.html#publications">Publications</a></li>
+            <li><a href="index.html#experience">Experience</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="wrap">
+        <a class="backlink" href="index.html">&larr; Back to sakibchowdhury131.github.io</a>
+
+        <header class="page-head">
             <h1>Resume</h1>
-			<ul>
-				<a href="sakib_resume_2026.pdf">Download PDF</a>
-			</ul>
-			<ul>
-				<embed src="sakib_resume_2026.pdf" width="900px" height="1200px" />			</ul>
+            <a class="btn" href="sakib_resume_2026.pdf">Download PDF</a>
+        </header>
 
-			
-        </div>
+        <embed src="sakib_resume_2026.pdf" type="application/pdf" class="pdf-frame">
+        <p class="pdf-fallback">If the resume doesn't display above, <a href="sakib_resume_2026.pdf">open the PDF directly</a>.</p>
     </div>
-	
-	
 
-	<!-- Quote -->
-	<!--
-	<div class="quote">
-		<div class="container text-centered">
-			<h1>"Part of the journey is the end".</h1>
-		</div>
-	</div>
-	-->
+    <footer>
+        <div class="addr">Burchard Building, Stevens Institute of Technology, Hoboken, New Jersey, USA &middot; <a href="mailto:sakibchowdhury131@gmail.com">sakibchowdhury131@gmail.com</a></div>
+        <div class="social">
+            <a href="mailto:sakibchowdhury131@gmail.com" aria-label="Email"><i class="fa fa-envelope"></i></a>
+            <a href="http://twitter.com/sakibchowdhury6" aria-label="Twitter"><i class="fa fa-twitter"></i></a>
+            <a href="https://www.linkedin.com/in/sakib-chowdhury97/" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+            <a href="https://scholar.google.com/citations?user=nhwkkfAAAAAJ&hl=en" aria-label="Google Scholar"><i class="fa fa-google"></i></a>
+            <a href="https://github.com/sakibchowdhury131" aria-label="GitHub"><i class="fa fa-github"></i></a>
+        </div>
+    </footer>
 
-	<footer>
-		<div class="container">
-			<div class="units-row">
-			    <div class="unit-50">
-			    	<p>New Jersey, USA</p>
-			    </div>
-			    <div class="unit-50">
-					<ul class="social list-flat right">
-						<li><a href="mailto:sakibchowdhury131@gmail.com"><i class="fa fa-send"></i></a></li>
-						<li><a href="http://twitter.com/sakibchowdhury6"><i class="fa fa-twitter"></i></a></li>
-						<li><a href="http://facebook.com/sakib97"><i class="fa fa-facebook"></i></a></li>
-						<li><a href="https://www.linkedin.com/in/sakib-chowdhury97/"><i class="fa fa-linkedin"></i></a></li>
-						<li><a href="https://scholar.google.com/citations?user=nhwkkfAAAAAJ&hl=en"><i class="fa fa-google"></i></a></li>
-						<li><a href="https://github.com/sakibchowdhury131"><i class="fa fa-github"></i></a></li>
-						
-					</ul>
-			    </div>
-			</div>
-		</div>
-	</footer>
-
-	<!-- Javascript -->
-	<script src="js/jquery.min.js"></script>
-	<script src="js/typed.min.js"></script>
-    <script src="js/kube.min.js"></script>
-    <script src="js/site.js"></script>
-
- 
 </body>
 </html>

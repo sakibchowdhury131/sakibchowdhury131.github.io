@@ -141,20 +141,6 @@
       &#251;(k, t) = &#251;(k, 0) &middot; exp(&minus;2&pi;&sup2;&sigma;(t)&sup2;|k|&sup2;)
       <span class="cap">Forward corruption in Fourier space &mdash; a Gaussian low-pass filter whose bandwidth shrinks as t grows</span>
     </div>
-    <div class="stat-row">
-      <div class="stat">
-        <div class="num">1.0000</div>
-        <div class="lbl">Mass-conservation ratio at every blur level tested &mdash; the forward process only redistributes pixel intensity, never adds or removes it</div>
-      </div>
-      <div class="stat">
-        <div class="num">0.0178&rarr;0.0013</div>
-        <div class="lbl">Training MSE loss over 100 epochs, 6.2M-parameter U-Net, 5,000 synthetic images</div>
-      </div>
-      <div class="stat">
-        <div class="num">0.00</div>
-        <div class="lbl">Remaining energy in the top 4 of 5 frequency bands at the final blur level &mdash; high frequencies are destroyed completely, not just attenuated</div>
-      </div>
-    </div>
     <div class="btn-row" style="margin-top:22px;">
       <a class="btn" href="https://github.com/sakibchowdhury131/HeatDissipationImageGeneration" target="_blank" rel="noopener">Code (GitHub)</a>
       <a class="btn secondary" href="#generation">Generation results &darr;</a>

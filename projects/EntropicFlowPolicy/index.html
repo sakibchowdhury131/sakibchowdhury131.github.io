@@ -114,6 +114,10 @@
     .muted-cell{ color: var(--muted); }
     .table-caption{ font-size: 12.5px; color: var(--muted); text-align:center; margin-top: -8px; margin-bottom: 16px; }
 
+    .diagram-row{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:13px; color: var(--muted); margin: 18px 0; }
+    .diagram-row .node{ background:#fff; border:1px solid var(--border); border-radius:8px; padding:8px 12px; color: var(--ink); }
+    .diagram-row .arrow{ color: var(--muted); }
+
     .callout{
       border:1px solid var(--border); border-left: 4px solid var(--ink); background:#fff;
       border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 20px 0;
@@ -153,20 +157,6 @@
       H(s, s<sub>g</sub>) = log&nbsp;|{&nbsp;&tau; : s&nbsp;&rarr;&nbsp;s<sub>g</sub>, |&tau;|&nbsp;&le;&nbsp;H&nbsp;}|
       &nbsp;&nbsp;&mdash;&nbsp;&nbsp; a good policy picks a such that H(T(s,a), s<sub>g</sub>) &lt; H(s, s<sub>g</sub>)
       <span class="cap">Goal-reachability entropy, and the contraction principle it implies</span>
-    </div>
-    <div class="stat-row">
-      <div class="stat">
-        <div class="num">64%</div>
-        <div class="lbl">Push-T success with entropy + failure-demo supervision, under an adversarial start &mdash; every baseline scored &le;24%</div>
-      </div>
-      <div class="stat">
-        <div class="num">0%</div>
-        <div class="lbl">EFP's score <i>without</i> failure demos, under perturbation &mdash; entropy guidance actively fights the diffusion prior instead of correcting it</div>
-      </div>
-      <div class="stat">
-        <div class="num">3</div>
-        <div class="lbl">Escalating tasks it took to separate EFP from behavior cloning &mdash; arm reaching, obstacle navigation, then Push-T</div>
-      </div>
     </div>
     <div class="btn-row" style="margin-top:22px;">
       <a class="btn" href="https://github.com/sakibchowdhury131/EntropicFlowPolicy" target="_blank" rel="noopener">Code (GitHub)</a>
@@ -332,18 +322,55 @@
         entropy estimator, and without.
       </p>
 
+      <h3 style="margin-top:32px;">Where the Demonstrations Actually Come From</h3>
+      <p style="max-width:66ch; color:var(--muted); font-size:15px;">
+        Neither the "success" nor the "failure" demos are human or learned &mdash; both are a hand-written script
+        that walks the pusher in a straight line toward a fixed sequence of pixel targets a programmer chose in
+        advance.
+      </p>
+      <div class="diagram-row">
+        <span class="node">detour left/right, clear of block</span><span class="arrow">&rarr;</span>
+        <span class="node">go around, below block</span><span class="arrow">&rarr;</span>
+        <span class="node">line up behind it</span><span class="arrow">&rarr;</span>
+        <span class="node">rise up beneath it</span><span class="arrow">&rarr;</span>
+        <span class="node">push straight up, through the goal</span>
+      </div>
+      <p style="max-width:66ch; color:var(--muted); font-size:15px;">
+        That's the "success" route &mdash; run twice, mirrored (approach from the left or the right), with a
+        hand-tuned sideways offset at the final push. Pushing an off-center T-shape makes it spin, so that offset
+        was tuned by trial and error to keep the block from rotating away from the goal as it's pushed into
+        place.
+      </p>
+      <p style="max-width:66ch; color:var(--muted); font-size:15px;">
+        The "failure" route is a single bad move by the same script: start directly <i>above</i> the block and
+        walk straight down. Since the goal sits above where the block starts, this drives it further away, not
+        closer.
+      </p>
+
+      <div class="callout">
+        <span class="kicker">What "Success" Actually Measures</span>
+        <p>
+          The block always spawns already facing the <i>same angle</i> as the goal &mdash; only its position is
+          wrong at the start. So the script's job is really just "translate the block upward without spinning
+          it," and success is graded by plain shape overlap: <code>coverage = intersection_area(goal, block) /
+          goal_area</code>, crossing a 0.35 threshold. There's no notion of "align the T's edges" as a goal in
+          itself &mdash; a well-aligned push just happens to produce high overlap, because the rotation was
+          already correct going in.
+        </p>
+      </div>
+
       <div class="fig">
-        <img src="web/images/pusht_result_panel.png" alt="Push-T benchmark: mean max coverage and success rate for EFP with/without failure demos, Diffusion Policy, BC, and MDN-BC, under Standard and Perturb start conditions">
-        <div class="caption">Success % (coverage &gt; 0.35) under both conditions. Standard: EFP+failure 64%, Diffusion Policy 24%, everything else 0%. Perturb (adversarial start): EFP+failure 56%, every other method 0%.</div>
+        <img src="web/images/pusht_result_panel.png" alt="Push-T benchmark: mean max coverage and success rate for EFP with/without failure demos, Unguided Flow Policy, BC, and MDN-BC, under Standard and Perturb start conditions">
+        <div class="caption">Success % (coverage &gt; 0.35) under both conditions. Standard: EFP+failure 64%, Unguided Flow Policy 24%, everything else 0%. Perturb (adversarial start): EFP+failure 56%, every other method 0%.</div>
       </div>
 
       <div class="callout">
         <span class="kicker">Why failure demos matter</span>
         <p>
           Without them, EFP's entropy gradient has never seen what "getting worse" looks like, so under
-          perturbation it has no signal to correct course, and its guidance term actively fights the diffusion
-          prior. Coverage collapses to 0.000 in both conditions, <i>worse</i> than plain Diffusion Policy's 0.143 /
-          0.010.
+          perturbation it has no signal to correct course, and its guidance term actively fights the flow prior.
+          Coverage collapses to 0.000 in both conditions, <i>worse</i> than the same network with guidance
+          switched off (Unguided Flow Policy: 0.143 / 0.010).
         </p>
         <p>
           Add failure trajectories, and the same architecture becomes the only method that survives the
@@ -364,7 +391,7 @@
         </div>
         <div class="method-card">
           <video src="web/gifs/dp_standard.mp4" autoplay loop muted playsinline></video>
-          <div class="meta"><div class="mname">Diffusion Policy</div><div class="mscore">24% success</div></div>
+          <div class="meta"><div class="mname">Unguided Flow Policy</div><div class="mscore">24% success</div></div>
         </div>
         <div class="method-card">
           <video src="web/gifs/bc_standard.mp4" autoplay loop muted playsinline></video>
@@ -389,7 +416,7 @@
         </div>
         <div class="method-card">
           <video src="web/gifs/dp_perturb.mp4" autoplay loop muted playsinline></video>
-          <div class="meta"><div class="mname">Diffusion Policy</div><div class="mscore">0% success</div></div>
+          <div class="meta"><div class="mname">Unguided Flow Policy</div><div class="mscore">0% success</div></div>
         </div>
         <div class="method-card">
           <video src="web/gifs/bc_perturb.mp4" autoplay loop muted playsinline></video>
@@ -400,6 +427,13 @@
           <div class="meta"><div class="mname">MDN-BC</div><div class="mscore">0% success</div></div>
         </div>
       </div>
+      <p style="font-size:12.5px; color:var(--muted); margin-top:14px;">
+        Each card is a single representative rollout, not a cherry-picked one &mdash; for a method scoring, say,
+        24%, the saved example may well be one of the failing runs. Success itself is defined as <i>coverage
+        exceeding 0.35 at any point</i> in the 350-step episode, not the block's final resting position, so the
+        EFP (w/ failure) clips above are trimmed to end at that peak-coverage moment rather than playing out the
+        full episode (where the policy continues moving and the block can drift again afterward).
+      </p>
 
       <h3 style="margin-top:40px;">How Sensitive Is This to the Guidance Scale?</h3>
       <p class="section-intro" style="margin-bottom:12px;">
@@ -420,15 +454,81 @@
         <img src="web/images/real_demo_results.png" alt="EFP vs Diffusion Policy on the real human-demonstration Push-T dataset, showing nearly all diffusion-based methods at 100% success in both conditions">
         <div class="caption">On the real dataset, EFP (w/ and w/o failure, w/ and w/o guidance) <i>and</i> plain Diffusion Policy all reach ~100% success in both Standard and Perturb. Only BC (Mean) and MDN-BC fail &mdash; BC's coverage holds up standard (100%) but collapses under perturbation (13%); MDN-BC fails outright.</div>
       </div>
+
+      <h4 style="margin:24px 0 12px; font-size:0.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);">Standard start</h4>
+      <div class="method-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="method-card">
+          <video src="web/gifs/real_demo/efp_wfail_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (w/ failure)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/efp_nofail_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (no failure)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/efp_noguidance_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (no guidance)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/dp_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">Diffusion Policy</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/bc_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">BC (Mean)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/mdn_standard.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">MDN-BC</div><div class="mscore">5% success</div></div>
+        </div>
+      </div>
+
+      <h4 style="margin:26px 0 12px; font-size:0.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted);">Perturb start (adversarial)</h4>
+      <div class="method-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="method-card">
+          <video src="web/gifs/real_demo/efp_wfail_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (w/ failure)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/efp_nofail_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (no failure)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/efp_noguidance_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">EFP (no guidance)</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/dp_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">Diffusion Policy</div><div class="mscore win">100% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/bc_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">BC (Mean)</div><div class="mscore">13% success</div></div>
+        </div>
+        <div class="method-card">
+          <video src="web/gifs/real_demo/mdn_perturb.mp4" autoplay loop muted playsinline></video>
+          <div class="meta"><div class="mname">MDN-BC</div><div class="mscore">0% success</div></div>
+        </div>
+      </div>
+
       <div class="callout">
         <span class="kicker">The honest caveat</span>
         <p>
-          Failure supervision's advantage on synthetic Push-T exists because the hand-scripted expert gave plain
-          Diffusion Policy a narrow, brittle demonstration set to imitate &mdash; DP only scored 24%/0% there.
-          Human demonstrations are naturally more diverse, and standard Diffusion Policy trained on them is
-          <i>already</i> robust to the adversarial start, without any entropy guidance at all. The
-          failure-supervision finding is real, but it's a finding about compensating for weak demonstrations,
-          not a universal improvement over Diffusion Policy.
+          The baseline actually called "Diffusion Policy" in the literature &mdash; a chunked
+          <code>ConditionalUnet1D</code> trained with DDPM &mdash; is exactly what's shown just above, where it
+          reaches ~100% on the real dataset. The synthetic-task comparison earlier on this page does <i>not</i>
+          use that architecture: its baseline (labeled "Unguided Flow Policy" throughout this page) is literally
+          the same lightweight, single-step flow-matching network as EFP itself, with the entropy-guidance term
+          switched off &mdash; no observation-history stacking, no action-chunking, a fresh noise sample drawn
+          independently at every timestep. Without temporal consistency, nothing stops it from sampling the left
+          detour at one step and the right detour a few steps later.
+        </p>
+        <p>
+          So the synthetic headline result is really <b>guided beats unguided</b> &mdash; an ablation of EFP
+          against itself &mdash; not a win over the real Diffusion Policy algorithm. That's still a meaningful,
+          isolated finding about what the guidance term contributes. It's compounded by demonstration diversity
+          too: 300 hand-scripted episodes are narrower than 206 human ones, which is a second reason the
+          unguided baseline struggles here but real Diffusion Policy, above, doesn't.
         </p>
       </div>
     </div>

@@ -142,20 +142,6 @@
       &#251;(k, t) = &#251;(k, 0) &middot; exp(&minus;2&pi;&sup2;&sigma;(t)&sup2;|k|&sup2;)
       <span class="cap">Forward corruption in Fourier space &mdash; the attenuation factor is exactly 1 at k=0, for every &sigma;</span>
     </div>
-    <div class="stat-row">
-      <div class="stat">
-        <div class="num">0&rarr;91%</div>
-        <div class="lbl">Mean eval score on Push-T: flat zero trained the naive way, ~91% once the DC/mean offset is augmented during training</div>
-      </div>
-      <div class="stat">
-        <div class="num">6/16</div>
-        <div class="lbl">Held-out seeds where the DC-augmented Heat policy outright beats standard Diffusion Policy</div>
-      </div>
-      <div class="stat">
-        <div class="num">1.000</div>
-        <div class="lbl">Mean score across 18 different DC offsets once augmented &mdash; every one converges to the same trajectory</div>
-      </div>
-    </div>
     <div class="btn-row" style="margin-top:22px;">
       <a class="btn" href="https://github.com/sakibchowdhury131/HeatDissipationPolicy" target="_blank" rel="noopener">Code (GitHub)</a>
       <a class="btn secondary" href="#dc">The DC finding &darr;</a>

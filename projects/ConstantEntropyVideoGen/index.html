@@ -144,20 +144,6 @@
       H(x) = &minus;&sum;<sub>k</sub> P(k) log P(k) &nbsp;&nbsp;where&nbsp;&nbsp; P(k) = |&#251;(k)|&sup2; / &sum;|&#251;(k)|&sup2;
       <span class="cap">Spectral entropy of a frame: the Shannon entropy of its normalized Fourier power spectrum</span>
     </div>
-    <div class="stat-row">
-      <div class="stat">
-        <div class="num">1.22%</div>
-        <div class="lbl">Mean relative change in spectral entropy between consecutive real frames (max 14.0%) &mdash; the hypothesis this project set out to test</div>
-      </div>
-      <div class="stat">
-        <div class="num">4.17M</div>
-        <div class="lbl">Parameters in the FlowNet next-frame predictor, trained on 9,500 real consecutive-frame pairs</div>
-      </div>
-      <div class="stat">
-        <div class="num warn">30.2%</div>
-        <div class="lbl">Entropy drift after 40 autoregressive rollout steps, despite training with an explicit entropy-conservation loss</div>
-      </div>
-    </div>
     <div class="btn-row" style="margin-top:22px;">
       <a class="btn" href="https://github.com/sakibchowdhury131/ConstantEntropyVideoGen" target="_blank" rel="noopener">Code (GitHub)</a>
       <a class="btn secondary" href="#rollout">See the rollout &darr;</a>
