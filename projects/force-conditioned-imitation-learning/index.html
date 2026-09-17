@@ -56,6 +56,11 @@
     .btn.secondary{ background:#fff; color:var(--ink); border: 1.5px solid var(--border); }
     .btn.secondary:hover{ background: var(--band); color:var(--ink); }
 
+    /* Main teaser (single narrated demo video) */
+    .main-teaser{ padding: 28px 24px 0; text-align:center; }
+    .main-teaser video{ width:100%; max-width: 760px; height:auto; display:block; margin: 0 auto; border-radius: 10px; background:#000; }
+    .main-teaser figcaption{ font-size: 13.5px; color: var(--muted); margin-top: 10px; }
+
     /* Teaser */
     .teaser{ padding: 28px 24px 0; }
     .teaser-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 640px; margin: 0 auto; }
@@ -120,6 +125,15 @@
       <a class="btn secondary" href="#citation">BibTeX</a>
     </div>
   </header>
+
+  <div class="main-teaser">
+    <figure>
+      <video controls preload="metadata" poster="web/force-conditioned-visuomotor-policy-poster.jpg">
+        <source src="web/force-conditioned-visuomotor-policy.mp4" type="video/mp4">
+      </video>
+      <figcaption>Narrated walkthrough of the force-conditioned visuomotor policy scooping task, end to end.</figcaption>
+    </figure>
+  </div>
 
   <div class="teaser">
     <div class="teaser-grid">
